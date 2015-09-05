@@ -75,6 +75,7 @@ namespace VirtualDesktopSwitcher
         private List<Form> forms;
         private dynamic jsonConfig;
         private const string CONFIG_FILENAME = "config.json";
+        private const string SHORTCUT_FILENAME = "\\VirtualDesktopSwitcher.lnk";
 
         public VirtualDesktopSwitcherForm()
         {
@@ -113,8 +114,30 @@ namespace VirtualDesktopSwitcher
             hideOnStartupCheckbox.CheckedChanged -= hideOnStartupCheckbox_CheckedChanged;
             hideOnStartupCheckbox.Checked = hideOnStartup;
             hideOnStartupCheckbox.CheckedChanged += hideOnStartupCheckbox_CheckedChanged;
-        }
 
+            if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Startup) + SHORTCUT_FILENAME))
+            {
+                IWshRuntimeLibrary.WshShellClass wsh = new IWshRuntimeLibrary.WshShellClass();
+                IWshRuntimeLibrary.IWshShortcut shortcut = wsh.CreateShortcut(
+                    Environment.GetFolderPath(Environment.SpecialFolder.Startup) + SHORTCUT_FILENAME)
+                    as IWshRuntimeLibrary.IWshShortcut;
+                if (shortcut.TargetPath.ToLower() == System.Reflection.Assembly.GetEntryAssembly().Location.ToLower())
+                {
+                    loadOnWindowsStartupCheckbox.Checked = true;
+                }
+                else
+                {
+                    var path = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
+                    File.Delete(path + SHORTCUT_FILENAME);
+                    loadOnWindowsStartupCheckbox.Checked = false;
+                }
+            }
+            else
+            {
+                loadOnWindowsStartupCheckbox.Checked = false;
+            }
+        }
+        
         protected override void WndProc(ref Message m)
         {
             if (m.Msg == WM_SYSCOMMAND)
@@ -241,7 +264,7 @@ namespace VirtualDesktopSwitcher
 
         private void helloToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Close();
+            Application.Exit();
         }
 
         private void ShowRectangles()
@@ -259,6 +282,7 @@ namespace VirtualDesktopSwitcher
                 form.Size = form.MinimumSize;
                 form.TopMost = true;
                 form.BackColor = Color.Yellow;
+                form.ShowInTaskbar = false;
                 form.Show();
                 forms.Add(form);
             }
@@ -295,6 +319,32 @@ namespace VirtualDesktopSwitcher
         private void UpdateConfigJsonFile()
         {
             File.WriteAllText(CONFIG_FILENAME, JsonConvert.SerializeObject(jsonConfig, Formatting.Indented));
+        }
+
+        private void loadOnWindowsStartupCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (loadOnWindowsStartupCheckbox.Checked)
+            {
+                IWshRuntimeLibrary.WshShellClass wsh = new IWshRuntimeLibrary.WshShellClass();
+                IWshRuntimeLibrary.IWshShortcut shortcut = wsh.CreateShortcut(
+                    Environment.GetFolderPath(Environment.SpecialFolder.Startup) + SHORTCUT_FILENAME)
+                    as IWshRuntimeLibrary.IWshShortcut;
+                shortcut.Arguments = "";
+                shortcut.TargetPath = System.Reflection.Assembly.GetEntryAssembly().Location;
+                shortcut.Description = "VisualDesktopSwitcher";
+                shortcut.WorkingDirectory = Environment.CurrentDirectory;
+                shortcut.Save();
+            }
+            else
+            {
+                var path = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
+                File.Delete(path + SHORTCUT_FILENAME);
+            }
+        }
+
+        private void VirtualDesktopSwitcherForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
         }
     }
 }
