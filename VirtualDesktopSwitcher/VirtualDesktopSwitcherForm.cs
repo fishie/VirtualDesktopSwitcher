@@ -64,6 +64,7 @@ namespace VirtualDesktopSwitcher
         public const int SC_MINIMIZE = 0xF020;
         #endregion
 
+        public bool hideOnStartup { get; private set; }
         public delegate int HookProc(int nCode, IntPtr wParam, IntPtr lParam);
         private static VirtualDesktopSwitcherForm formInstance;
         private static IKeyboardSimulator keyboardSimulator;
@@ -99,6 +100,7 @@ namespace VirtualDesktopSwitcher
                 }
 
                 desktopScroll = jsonConfig.desktopScroll ?? false;
+                hideOnStartup = jsonConfig.hideOnStartup ?? false;
             }
         }
 
@@ -224,11 +226,6 @@ namespace VirtualDesktopSwitcher
                 Visible = !Visible;
                 TopMost = Visible;
             }
-        }
-
-        private void HideFormEventHandler(object sender, EventArgs e)
-        {
-            Hide();
         }
 
         private void helloToolStripMenuItem_Click(object sender, EventArgs e)

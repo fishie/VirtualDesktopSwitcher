@@ -13,7 +13,7 @@ namespace VirtualDesktopSwitcher
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new VirtualDesktopSwitcherForm());
+            Application.Run(new HiddenContext());
         }
     }
 }

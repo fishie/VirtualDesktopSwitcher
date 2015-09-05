@@ -50,6 +50,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HiddenContext.cs" />
     <Compile Include="VirtualDesktopSwitcherForm.cs">
       <SubType>Form</SubType>
     </Compile>

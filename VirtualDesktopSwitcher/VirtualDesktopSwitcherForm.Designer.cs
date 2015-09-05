@@ -72,7 +72,6 @@
             this.Name = "VirtualDesktopSwitcherForm";
             this.ShowInTaskbar = false;
             this.Text = "VirtualDesktopSwitcher";
-            this.Shown += new System.EventHandler(this.HideFormEventHandler);
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ToggleVisibilityWithMouseClick);
             this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
