@@ -1,8 +1,10 @@
 # VirtualDesktopSwitcher for Windows 10
 
-hello
+Are you like me and have been using the mouse scroll to switch between virtual desktops on GNU/Linux for years? Do you like to keep your hand in your pants while still being able to easily switch between virtual desktops? Then this program might be for you.
 
-Are you like me and have been using the mouse scroll to switch between virtual desktops on GNU/Linux for years? Do you like to keep your hand in your pants while still being able to easily switch between virtual desktops? Then this program might be for you. 
+Finally virtual desktops have come to Windows! Hallelujah! But, virtual desktops in Windows 10 are somewhat lacking in functionality compared to the well established virtual desktops in the GNU/Linux world. Sooner or later Microsoft will probably introduce more functionality but in the meantime this project attempts to amend some of what is lacking.
+
+Also check out https://www.facebook.com/Win10VirtualDesktopSwitcher which might be more interesting for you.
 
 ## How to use:
 -
