@@ -85,17 +85,20 @@ namespace VirtualDesktopSwitcher
                 string json = streamReader.ReadToEnd();
                 dynamic jsonConfig = JsonConvert.DeserializeObject(json);
 
-                foreach (var jsonRectangle in jsonConfig.rectangles)
+                if (jsonConfig.rectangles != null)
                 {
-                    int x = jsonRectangle.x;
-                    int y = jsonRectangle.y;
-                    int width = jsonRectangle.width;
-                    int height = jsonRectangle.height;
+                    foreach (var jsonRectangle in jsonConfig.rectangles)
+                    {
+                        int x = jsonRectangle.x;
+                        int y = jsonRectangle.y;
+                        int width = jsonRectangle.width;
+                        int height = jsonRectangle.height;
 
-                    rectangles.Add(new Rectangle(x, y, width, height));
+                        rectangles.Add(new Rectangle(x, y, width, height));
+                    }
                 }
 
-                desktopScroll = jsonConfig.desktopScroll;
+                desktopScroll = jsonConfig.desktopScroll ?? false;
             }
         }
 
