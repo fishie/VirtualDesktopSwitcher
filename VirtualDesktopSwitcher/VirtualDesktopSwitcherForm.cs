@@ -72,7 +72,10 @@ namespace VirtualDesktopSwitcher
         private static bool desktopScroll;
         private static int hHook = 0;
         private HookProc mouseHookProcedure; // Need to keep a reference to hookproc or otherwise it will be GC:ed.
-        
+        private List<Form> forms;
+        private dynamic jsonConfig;
+        private const string CONFIG_FILENAME = "config.json";
+
         public VirtualDesktopSwitcherForm()
         {
             InitializeComponent();
@@ -81,10 +84,10 @@ namespace VirtualDesktopSwitcher
             AttachHook();
             rectangles = new List<Rectangle>();
 
-            using (var streamReader = new StreamReader("config.json"))
+            using (var streamReader = new StreamReader(CONFIG_FILENAME))
             {
                 string json = streamReader.ReadToEnd();
-                dynamic jsonConfig = JsonConvert.DeserializeObject(json);
+                jsonConfig = JsonConvert.DeserializeObject(json);
 
                 if (jsonConfig.rectangles != null)
                 {
@@ -102,6 +105,14 @@ namespace VirtualDesktopSwitcher
                 desktopScroll = jsonConfig.desktopScroll ?? false;
                 hideOnStartup = jsonConfig.hideOnStartup ?? false;
             }
+
+            desktopScrollCheckbox.CheckedChanged -= desktopScrollCheckbox_CheckedChanged;
+            desktopScrollCheckbox.Checked = desktopScroll;
+            desktopScrollCheckbox.CheckedChanged += desktopScrollCheckbox_CheckedChanged;
+
+            hideOnStartupCheckbox.CheckedChanged -= hideOnStartupCheckbox_CheckedChanged;
+            hideOnStartupCheckbox.Checked = hideOnStartup;
+            hideOnStartupCheckbox.CheckedChanged += hideOnStartupCheckbox_CheckedChanged;
         }
 
         protected override void WndProc(ref Message m)
@@ -195,7 +206,7 @@ namespace VirtualDesktopSwitcher
 
             if (CheckPoint(msllHookStruct.pt) || (desktopScroll && windowTitle.ToString() == "FolderView"))
             {
-                if (formInstance.Visible) formInstance.BackColor = Color.Green;
+                if (formInstance.Visible) formInstance.BackColor = Color.Yellow;
 
                 if (wParam.ToInt32() == WM_MOUSEWHEEL)
                 {
@@ -213,7 +224,7 @@ namespace VirtualDesktopSwitcher
             }
             else
             {
-                if (formInstance.Visible) formInstance.BackColor = Color.LightGray;
+                if (formInstance.Visible) formInstance.BackColor = SystemColors.Control;
             }
 
             return CallNextHookEx(hHook, nCode, wParam, lParam);
@@ -231,6 +242,59 @@ namespace VirtualDesktopSwitcher
         private void helloToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void ShowRectangles()
+        {
+            forms = new List<Form>();
+
+            foreach (var rectangle in rectangles)
+            {
+                var form = new Form();
+                form.Parent = null;
+                form.FormBorderStyle = FormBorderStyle.None;
+                form.StartPosition = FormStartPosition.Manual;
+                form.Location = new Point(rectangle.X, rectangle.Y);
+                form.MinimumSize = new Size(rectangle.Width, rectangle.Height);
+                form.Size = form.MinimumSize;
+                form.TopMost = true;
+                form.BackColor = Color.Yellow;
+                form.Show();
+                forms.Add(form);
+            }
+        }
+
+        private void HideRectangles()
+        {
+            foreach (var form in forms)
+            {
+                form.Close();
+            }
+            forms = null;
+        }
+
+        private void VirtualDesktopSwitcherForm_VisibleChanged(object sender, EventArgs e)
+        {
+            if (Visible) ShowRectangles();
+            else HideRectangles();
+        }
+
+        private void desktopScrollCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            desktopScroll = desktopScrollCheckbox.Checked;
+            jsonConfig.desktopScroll = desktopScroll;
+            UpdateConfigJsonFile();
+        }
+
+        private void hideOnStartupCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            jsonConfig.hideOnStartup = hideOnStartupCheckbox.Checked;
+            UpdateConfigJsonFile();
+        }
+
+        private void UpdateConfigJsonFile()
+        {
+            File.WriteAllText(CONFIG_FILENAME, JsonConvert.SerializeObject(jsonConfig, Formatting.Indented));
         }
     }
 }

@@ -33,6 +33,8 @@
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.helloToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.desktopScrollCheckbox = new System.Windows.Forms.CheckBox();
+            this.hideOnStartupCheckbox = new System.Windows.Forms.CheckBox();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -60,11 +62,35 @@
             this.helloToolStripMenuItem.Text = "Exit";
             this.helloToolStripMenuItem.Click += new System.EventHandler(this.helloToolStripMenuItem_Click);
             // 
+            // desktopScrollCheckbox
+            // 
+            this.desktopScrollCheckbox.AutoSize = true;
+            this.desktopScrollCheckbox.Location = new System.Drawing.Point(34, 39);
+            this.desktopScrollCheckbox.Name = "desktopScrollCheckbox";
+            this.desktopScrollCheckbox.Size = new System.Drawing.Size(90, 17);
+            this.desktopScrollCheckbox.TabIndex = 1;
+            this.desktopScrollCheckbox.Text = "desktopScroll";
+            this.desktopScrollCheckbox.UseVisualStyleBackColor = true;
+            this.desktopScrollCheckbox.CheckedChanged += new System.EventHandler(this.desktopScrollCheckbox_CheckedChanged);
+            // 
+            // hideOnStartupCheckbox
+            // 
+            this.hideOnStartupCheckbox.AutoSize = true;
+            this.hideOnStartupCheckbox.Location = new System.Drawing.Point(34, 63);
+            this.hideOnStartupCheckbox.Name = "hideOnStartupCheckbox";
+            this.hideOnStartupCheckbox.Size = new System.Drawing.Size(94, 17);
+            this.hideOnStartupCheckbox.TabIndex = 2;
+            this.hideOnStartupCheckbox.Text = "hideOnStartup";
+            this.hideOnStartupCheckbox.UseVisualStyleBackColor = true;
+            this.hideOnStartupCheckbox.CheckedChanged += new System.EventHandler(this.hideOnStartupCheckbox_CheckedChanged);
+            // 
             // VirtualDesktopSwitcherForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 261);
+            this.Controls.Add(this.hideOnStartupCheckbox);
+            this.Controls.Add(this.desktopScrollCheckbox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximumSize = new System.Drawing.Size(300, 300);
@@ -72,9 +98,11 @@
             this.Name = "VirtualDesktopSwitcherForm";
             this.ShowInTaskbar = false;
             this.Text = "VirtualDesktopSwitcher";
+            this.VisibleChanged += new System.EventHandler(this.VirtualDesktopSwitcherForm_VisibleChanged);
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ToggleVisibilityWithMouseClick);
             this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -83,6 +111,8 @@
         private System.Windows.Forms.NotifyIcon notifyIcon;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem helloToolStripMenuItem;
+        private System.Windows.Forms.CheckBox desktopScrollCheckbox;
+        private System.Windows.Forms.CheckBox hideOnStartupCheckbox;
     }
 }
 
