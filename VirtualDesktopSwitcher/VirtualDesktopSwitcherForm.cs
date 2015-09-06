@@ -87,6 +87,7 @@ namespace VirtualDesktopSwitcher
             keyboardSimulator = (new InputSimulator()).Keyboard;
             AttachHook();
             rectangles = new List<Rectangle>();
+            forms = new List<Form>();
 
             using (var streamReader = new StreamReader(CONFIG_FILENAME))
             {
@@ -286,20 +287,20 @@ namespace VirtualDesktopSwitcher
 
         private void ShowRectangles()
         {
-            forms = new List<Form>();
-
             foreach (var rectangle in rectangles)
             {
-                var form = new Form();
-                form.Parent = null;
-                form.FormBorderStyle = FormBorderStyle.None;
-                form.StartPosition = FormStartPosition.Manual;
-                form.Location = new Point(rectangle.X, rectangle.Y);
-                form.MinimumSize = new Size(rectangle.Width, rectangle.Height);
-                form.Size = form.MinimumSize;
-                form.TopMost = true;
-                form.BackColor = Color.Yellow;
-                form.ShowInTaskbar = false;
+                var form = new Form
+                {
+                    Parent = null,
+                    FormBorderStyle = FormBorderStyle.None,
+                    StartPosition = FormStartPosition.Manual,
+                    Location = new Point(rectangle.X, rectangle.Y),
+                    MinimumSize = new Size(rectangle.Width, rectangle.Height),
+                    Size = new Size(rectangle.Width, rectangle.Height),
+                    TopMost = true,
+                    BackColor = Color.Yellow,
+                    ShowInTaskbar = false
+                };
                 form.Show();
                 forms.Add(form);
             }
@@ -311,7 +312,7 @@ namespace VirtualDesktopSwitcher
             {
                 form.Close();
             }
-            forms = null;
+            forms.Clear();
         }
 
         private void VirtualDesktopSwitcherForm_VisibleChanged(object sender, EventArgs e)
