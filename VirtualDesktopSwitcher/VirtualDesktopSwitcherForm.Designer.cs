@@ -99,7 +99,6 @@
             // 
             // treeView1
             // 
-            this.treeView1.LabelEdit = true;
             this.treeView1.Location = new System.Drawing.Point(34, 109);
             this.treeView1.Name = "treeView1";
             this.treeView1.Size = new System.Drawing.Size(217, 140);
