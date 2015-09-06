@@ -375,33 +375,23 @@ namespace VirtualDesktopSwitcher
 
         private void treeView1_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
         {
+            int rectangleIndex = e.Node.Parent.Parent.Index;
+            string propertyName = e.Node.Parent.Text;
             int value;
+
             if (int.TryParse(e.Label, out value))
             {
-                int i = e.Node.Parent.Parent.Index;
-                var rectangle = rectangles[i];
-                
-                switch (e.Node.Parent.Text[0])
-                {
-                    case 'x':
-                        rectangle.X = value;
-                        break;
-                    case 'y':
-                        rectangle.Y = value;
-                        break;
-                    case 'w':
-                        rectangle.Width = value;
-                        break;
-                    case 'h':
-                        rectangle.Height = value;
-                        break;
-                }
-
-                rectangles[i] = rectangle; // because Rectangle is a struct we only get a copy of it, not the reference
-
-                e.Node.TreeView.LabelEdit = false;
+                rectangles[rectangleIndex].Set(propertyName, value);
+                jsonConfig.rectangles[rectangleIndex][propertyName] = value;
+                UpdateConfigJsonFile();
+                HideRectangles();
+                ShowRectangles();
             }
-
+            else
+            {
+                e.CancelEdit = true;
+            }
+            e.Node.TreeView.LabelEdit = false;
         }
     }
 }
