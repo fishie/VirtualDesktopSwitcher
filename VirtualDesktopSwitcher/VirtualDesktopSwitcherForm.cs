@@ -66,14 +66,17 @@ namespace VirtualDesktopSwitcher
 
         public bool hideOnStartup { get; private set; }
         public delegate int HookProc(int nCode, IntPtr wParam, IntPtr lParam);
+
         private static VirtualDesktopSwitcherForm formInstance;
         private static IKeyboardSimulator keyboardSimulator;
         private static List<Rectangle> rectangles;
         private static bool desktopScroll;
         private static int hHook = 0;
+
         private HookProc mouseHookProcedure; // Need to keep a reference to hookproc or otherwise it will be GC:ed.
         private List<Form> forms;
         private dynamic jsonConfig;
+
         private const string CONFIG_FILENAME = "config.json";
         private const string SHORTCUT_FILENAME = "\\VirtualDesktopSwitcher.lnk";
 
@@ -100,6 +103,20 @@ namespace VirtualDesktopSwitcher
                         int height = jsonRectangle.height;
 
                         rectangles.Add(new Rectangle(x, y, width, height));
+
+                        var node = treeView1.Nodes.Add("rectangle " + (treeView1.Nodes.Count+1));
+
+                        Action<string, int> addSubNode = (label, value) =>
+                        {
+                            var subnode = node.Nodes.Add(label);
+                            var subsubnode = subnode.Nodes.Add(value.ToString());
+                            subnode.ExpandAll();
+                        };
+
+                        addSubNode("x", x);
+                        addSubNode("y", y);
+                        addSubNode("width", width);
+                        addSubNode("height", height);
                     }
                 }
 
@@ -345,6 +362,46 @@ namespace VirtualDesktopSwitcher
         private void VirtualDesktopSwitcherForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             Application.Exit();
+        }
+
+        private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (e.Node.Level == 2)
+            {
+                e.Node.TreeView.LabelEdit = true;
+                e.Node.BeginEdit();
+            }
+        }
+
+        private void treeView1_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
+        {
+            int value;
+            if (int.TryParse(e.Label, out value))
+            {
+                int i = e.Node.Parent.Parent.Index;
+                var rectangle = rectangles[i];
+                
+                switch (e.Node.Parent.Text[0])
+                {
+                    case 'x':
+                        rectangle.X = value;
+                        break;
+                    case 'y':
+                        rectangle.Y = value;
+                        break;
+                    case 'w':
+                        rectangle.Width = value;
+                        break;
+                    case 'h':
+                        rectangle.Height = value;
+                        break;
+                }
+
+                rectangles[i] = rectangle; // because Rectangle is a struct we only get a copy of it, not the reference
+
+                e.Node.TreeView.LabelEdit = false;
+            }
+
         }
     }
 }

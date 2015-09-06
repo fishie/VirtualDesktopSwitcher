@@ -36,6 +36,7 @@
             this.desktopScrollCheckbox = new System.Windows.Forms.CheckBox();
             this.hideOnStartupCheckbox = new System.Windows.Forms.CheckBox();
             this.loadOnWindowsStartupCheckbox = new System.Windows.Forms.CheckBox();
+            this.treeView1 = new System.Windows.Forms.TreeView();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -96,11 +97,22 @@
             this.loadOnWindowsStartupCheckbox.UseVisualStyleBackColor = true;
             this.loadOnWindowsStartupCheckbox.CheckedChanged += new System.EventHandler(this.loadOnWindowsStartupCheckbox_CheckedChanged);
             // 
+            // treeView1
+            // 
+            this.treeView1.LabelEdit = true;
+            this.treeView1.Location = new System.Drawing.Point(34, 109);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(217, 140);
+            this.treeView1.TabIndex = 4;
+            this.treeView1.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView1_AfterLabelEdit);
+            this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
+            // 
             // VirtualDesktopSwitcherForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 261);
+            this.Controls.Add(this.treeView1);
             this.Controls.Add(this.loadOnWindowsStartupCheckbox);
             this.Controls.Add(this.hideOnStartupCheckbox);
             this.Controls.Add(this.desktopScrollCheckbox);
@@ -128,6 +140,7 @@
         private System.Windows.Forms.CheckBox desktopScrollCheckbox;
         private System.Windows.Forms.CheckBox hideOnStartupCheckbox;
         private System.Windows.Forms.CheckBox loadOnWindowsStartupCheckbox;
+        private System.Windows.Forms.TreeView treeView1;
     }
 }
 
