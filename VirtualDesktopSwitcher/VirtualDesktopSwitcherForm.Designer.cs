@@ -32,7 +32,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(VirtualDesktopSwitcherForm));
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.trayIconRightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.helloToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.desktopScrollCheckbox = new System.Windows.Forms.CheckBox();
             this.hideOnStartupCheckbox = new System.Windows.Forms.CheckBox();
             this.loadOnWindowsStartupCheckbox = new System.Windows.Forms.CheckBox();
@@ -58,17 +58,17 @@
             // trayIconRightClickMenu
             // 
             this.trayIconRightClickMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.helloToolStripMenuItem});
+            this.exitMenuItem});
             this.trayIconRightClickMenu.Name = "trayIconRightClickMenu";
             this.trayIconRightClickMenu.ShowImageMargin = false;
-            this.trayIconRightClickMenu.Size = new System.Drawing.Size(68, 26);
+            this.trayIconRightClickMenu.Size = new System.Drawing.Size(128, 48);
             // 
-            // helloToolStripMenuItem
+            // exitMenuItem
             // 
-            this.helloToolStripMenuItem.Name = "helloToolStripMenuItem";
-            this.helloToolStripMenuItem.Size = new System.Drawing.Size(67, 22);
-            this.helloToolStripMenuItem.Text = "Exit";
-            this.helloToolStripMenuItem.Click += new System.EventHandler(this.helloToolStripMenuItem_Click);
+            this.exitMenuItem.Name = "exitMenuItem";
+            this.exitMenuItem.Size = new System.Drawing.Size(127, 22);
+            this.exitMenuItem.Text = "Exit";
+            this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
             // 
             // desktopScrollCheckbox
             // 
@@ -173,7 +173,7 @@
 
         private System.Windows.Forms.NotifyIcon notifyIcon;
         private System.Windows.Forms.ContextMenuStrip trayIconRightClickMenu;
-        private System.Windows.Forms.ToolStripMenuItem helloToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exitMenuItem;
         private System.Windows.Forms.CheckBox desktopScrollCheckbox;
         private System.Windows.Forms.CheckBox hideOnStartupCheckbox;
         private System.Windows.Forms.CheckBox loadOnWindowsStartupCheckbox;

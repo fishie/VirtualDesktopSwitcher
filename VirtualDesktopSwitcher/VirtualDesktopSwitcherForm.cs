@@ -281,8 +281,9 @@ namespace VirtualDesktopSwitcher
             }
         }
 
-        private void helloToolStripMenuItem_Click(object sender, EventArgs e)
+        private void exitMenuItem_Click(object sender, EventArgs e)
         {
+            notifyIcon.Visible = false;
             Application.Exit();
         }
 
@@ -363,6 +364,7 @@ namespace VirtualDesktopSwitcher
 
         private void VirtualDesktopSwitcherForm_FormClosed(object sender, FormClosedEventArgs e)
         {
+            notifyIcon.Visible = false;
             Application.Exit();
         }
 
