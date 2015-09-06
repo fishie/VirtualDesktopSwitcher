@@ -248,37 +248,43 @@ namespace VirtualDesktopSwitcher
                 return CallNextHookEx(hHook, nCode, wParam, lParam);
             }
 
-            var msllHookStruct = Marshal.PtrToStructure<MSLLHOOKSTRUCT>(lParam);
-
             if (formInstance.Visible)
             {
+                var msllHookStruct = Marshal.PtrToStructure<MSLLHOOKSTRUCT>(lParam);
                 formInstance.Text = string.Format("{0} {1}", msllHookStruct.pt.x, msllHookStruct.pt.y);
-            }
 
-            var windowTitle = new StringBuilder(10);
-            GetWindowText(WindowFromPoint(msllHookStruct.pt), windowTitle, 11);
-
-            if (CheckPoint(msllHookStruct.pt) || (desktopScroll && windowTitle.ToString() == "FolderView"))
-            {
-                if (formInstance.Visible) formInstance.BackColor = Color.Yellow;
-
-                if (wParam.ToInt32() == WM_MOUSEWHEEL)
+                if (CheckPoint(msllHookStruct.pt))
                 {
-                    int highOrder = msllHookStruct.mouseData >> 16;
-
-                    if (highOrder > 0)
-                    {
-                        CtrlWinKey(VirtualKeyCode.LEFT);
-                    }
-                    else
-                    {
-                        CtrlWinKey(VirtualKeyCode.RIGHT);
-                    }
+                    formInstance.BackColor = Color.Yellow;
+                }
+                else
+                {
+                    formInstance.BackColor = SystemColors.Control;
                 }
             }
-            else
+
+            if (wParam.ToInt32() == WM_MOUSEWHEEL)
             {
-                if (formInstance.Visible) formInstance.BackColor = SystemColors.Control;
+                var msllHookStruct = Marshal.PtrToStructure<MSLLHOOKSTRUCT>(lParam);
+                var windowTitle = new StringBuilder(10);
+                GetWindowText(WindowFromPoint(msllHookStruct.pt), windowTitle, 11);
+
+                if (CheckPoint(msllHookStruct.pt) || (desktopScroll && windowTitle.ToString() == "FolderView"))
+                {
+                    if (wParam.ToInt32() == WM_MOUSEWHEEL)
+                    {
+                        int highOrder = msllHookStruct.mouseData >> 16;
+
+                        if (highOrder > 0)
+                        {
+                            CtrlWinKey(VirtualKeyCode.LEFT);
+                        }
+                        else
+                        {
+                            CtrlWinKey(VirtualKeyCode.RIGHT);
+                        }
+                    }
+                }
             }
 
             return CallNextHookEx(hHook, nCode, wParam, lParam);
