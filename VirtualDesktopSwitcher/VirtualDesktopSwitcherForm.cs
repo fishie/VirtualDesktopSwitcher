@@ -76,6 +76,7 @@ namespace VirtualDesktopSwitcher
         private HookProc mouseHookProcedure; // Need to keep a reference to hookproc or otherwise it will be GC:ed.
         private List<Form> forms;
         private dynamic jsonConfig;
+        private TreeNode clickedNode;
 
         private const string CONFIG_FILENAME = "config.json";
         private const string SHORTCUT_FILENAME = "\\VirtualDesktopSwitcher.lnk";
@@ -393,6 +394,58 @@ namespace VirtualDesktopSwitcher
                 e.CancelEdit = true;
             }
             e.Node.TreeView.LabelEdit = false;
+        }
+
+        private void addRectangleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var node = treeView1.Nodes.Add("rectangle " + (treeView1.Nodes.Count + 1));
+            treeView1.SelectedNode = node;
+
+            Action<string, string> addSubNode = (label, value) =>
+            {
+                var subnode = node.Nodes.Add(label);
+                subnode.Nodes.Add(value);
+                subnode.ExpandAll();
+            };
+
+            addSubNode("x", "0");
+            addSubNode("y", "0");
+            addSubNode("width", "50");
+            addSubNode("height", "40");
+
+            rectangles.Add(new Rectangle(0, 0, 50, 40));
+            var jObject = JsonConvert.DeserializeObject(@"{""x"": 0, ""y"": 0, ""width"": 50, ""height"": 40}");
+            jsonConfig.rectangles.Add(jObject);
+            HideRectangles();
+            ShowRectangles();
+            UpdateConfigJsonFile();
+        }
+
+        private void removeRectangleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var index = clickedNode.Index;
+            clickedNode.Remove();
+            rectangles.RemoveAt(index);
+            jsonConfig.rectangles.RemoveAt(index);
+            HideRectangles();
+            ShowRectangles();
+            UpdateConfigJsonFile();
+        }
+
+        private void treeView1_MouseDown(object sender, MouseEventArgs e)
+        {
+            var node = treeView1.GetNodeAt(e.Location);
+            if (node != null && node.Level == 0)
+            {
+                treeView1.SelectedNode = node;
+                clickedNode = node;
+                treeViewRightClickMenuRemove.Items[0].Text = "Remove rectangle " + (node.Index + 1);
+                treeView1.ContextMenuStrip = treeViewRightClickMenuRemove;
+            }
+            else
+            {
+                treeView1.ContextMenuStrip = treeViewRightClickMenuAdd;
+            }
         }
     }
 }

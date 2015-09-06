@@ -31,31 +31,37 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(VirtualDesktopSwitcherForm));
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.trayIconRightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.helloToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.desktopScrollCheckbox = new System.Windows.Forms.CheckBox();
             this.hideOnStartupCheckbox = new System.Windows.Forms.CheckBox();
             this.loadOnWindowsStartupCheckbox = new System.Windows.Forms.CheckBox();
             this.treeView1 = new System.Windows.Forms.TreeView();
-            this.contextMenuStrip1.SuspendLayout();
+            this.treeViewRightClickMenuAdd = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.addRectangleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.treeViewRightClickMenuRemove = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.removeRectangleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.trayIconRightClickMenu.SuspendLayout();
+            this.treeViewRightClickMenuAdd.SuspendLayout();
+            this.treeViewRightClickMenuRemove.SuspendLayout();
             this.SuspendLayout();
             // 
             // notifyIcon
             // 
-            this.notifyIcon.ContextMenuStrip = this.contextMenuStrip1;
+            this.notifyIcon.ContextMenuStrip = this.trayIconRightClickMenu;
             this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
             this.notifyIcon.Text = "VirtualDesktopSwitcher";
             this.notifyIcon.Visible = true;
             this.notifyIcon.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ToggleVisibilityWithMouseClick);
             this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ToggleVisibilityWithMouseClick);
             // 
-            // contextMenuStrip1
+            // trayIconRightClickMenu
             // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.trayIconRightClickMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.helloToolStripMenuItem});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.ShowImageMargin = false;
-            this.contextMenuStrip1.Size = new System.Drawing.Size(68, 26);
+            this.trayIconRightClickMenu.Name = "trayIconRightClickMenu";
+            this.trayIconRightClickMenu.ShowImageMargin = false;
+            this.trayIconRightClickMenu.Size = new System.Drawing.Size(68, 26);
             // 
             // helloToolStripMenuItem
             // 
@@ -99,12 +105,42 @@
             // 
             // treeView1
             // 
+            this.treeView1.ContextMenuStrip = this.treeViewRightClickMenuAdd;
             this.treeView1.Location = new System.Drawing.Point(34, 109);
             this.treeView1.Name = "treeView1";
             this.treeView1.Size = new System.Drawing.Size(217, 140);
             this.treeView1.TabIndex = 4;
             this.treeView1.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView1_AfterLabelEdit);
             this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
+            this.treeView1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.treeView1_MouseDown);
+            // 
+            // treeViewRightClickMenuAdd
+            // 
+            this.treeViewRightClickMenuAdd.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addRectangleToolStripMenuItem});
+            this.treeViewRightClickMenuAdd.Name = "treeViewRightClickMenu";
+            this.treeViewRightClickMenuAdd.Size = new System.Drawing.Size(149, 26);
+            // 
+            // addRectangleToolStripMenuItem
+            // 
+            this.addRectangleToolStripMenuItem.Name = "addRectangleToolStripMenuItem";
+            this.addRectangleToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
+            this.addRectangleToolStripMenuItem.Text = "Add rectangle";
+            this.addRectangleToolStripMenuItem.Click += new System.EventHandler(this.addRectangleToolStripMenuItem_Click);
+            // 
+            // treeViewRightClickMenuRemove
+            // 
+            this.treeViewRightClickMenuRemove.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.removeRectangleToolStripMenuItem});
+            this.treeViewRightClickMenuRemove.Name = "treeViewRightClickMenuRemove";
+            this.treeViewRightClickMenuRemove.Size = new System.Drawing.Size(170, 26);
+            // 
+            // removeRectangleToolStripMenuItem
+            // 
+            this.removeRectangleToolStripMenuItem.Name = "removeRectangleToolStripMenuItem";
+            this.removeRectangleToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.removeRectangleToolStripMenuItem.Text = "Remove rectangle";
+            this.removeRectangleToolStripMenuItem.Click += new System.EventHandler(this.removeRectangleToolStripMenuItem_Click);
             // 
             // VirtualDesktopSwitcherForm
             // 
@@ -125,7 +161,9 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.VirtualDesktopSwitcherForm_FormClosed);
             this.VisibleChanged += new System.EventHandler(this.VirtualDesktopSwitcherForm_VisibleChanged);
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ToggleVisibilityWithMouseClick);
-            this.contextMenuStrip1.ResumeLayout(false);
+            this.trayIconRightClickMenu.ResumeLayout(false);
+            this.treeViewRightClickMenuAdd.ResumeLayout(false);
+            this.treeViewRightClickMenuRemove.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -134,12 +172,16 @@
         #endregion
 
         private System.Windows.Forms.NotifyIcon notifyIcon;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ContextMenuStrip trayIconRightClickMenu;
         private System.Windows.Forms.ToolStripMenuItem helloToolStripMenuItem;
         private System.Windows.Forms.CheckBox desktopScrollCheckbox;
         private System.Windows.Forms.CheckBox hideOnStartupCheckbox;
         private System.Windows.Forms.CheckBox loadOnWindowsStartupCheckbox;
         private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.ContextMenuStrip treeViewRightClickMenuAdd;
+        private System.Windows.Forms.ToolStripMenuItem addRectangleToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip treeViewRightClickMenuRemove;
+        private System.Windows.Forms.ToolStripMenuItem removeRectangleToolStripMenuItem;
     }
 }
 
