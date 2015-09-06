@@ -84,12 +84,19 @@ namespace VirtualDesktopSwitcher
         public VirtualDesktopSwitcherForm()
         {
             InitializeComponent();
+
             formInstance = this;
             keyboardSimulator = (new InputSimulator()).Keyboard;
-            AttachHook();
             rectangles = new List<Rectangle>();
             forms = new List<Form>();
 
+            ReadConfig();
+            CheckForStartupShortcut();
+            AttachHook();
+        }
+
+        private void ReadConfig()
+        {
             using (var streamReader = new StreamReader(CONFIG_FILENAME))
             {
                 string json = streamReader.ReadToEnd();
@@ -106,7 +113,7 @@ namespace VirtualDesktopSwitcher
 
                         rectangles.Add(new Rectangle(x, y, width, height));
 
-                        var node = treeView1.Nodes.Add("rectangle " + (treeView1.Nodes.Count+1));
+                        var node = treeView1.Nodes.Add("rectangle " + (treeView1.Nodes.Count + 1));
 
                         Action<string, int> addSubNode = (label, value) =>
                         {
@@ -126,14 +133,19 @@ namespace VirtualDesktopSwitcher
                 hideOnStartup = jsonConfig.hideOnStartup ?? false;
             }
 
-            desktopScrollCheckbox.CheckedChanged -= desktopScrollCheckbox_CheckedChanged;
-            desktopScrollCheckbox.Checked = desktopScroll;
-            desktopScrollCheckbox.CheckedChanged += desktopScrollCheckbox_CheckedChanged;
+            Action<bool, CheckBox, EventHandler> setChecked = (boolValue, checkBox, eventHandler) =>
+            {
+                checkBox.CheckedChanged -= eventHandler;
+                checkBox.Checked = boolValue;
+                checkBox.CheckedChanged += eventHandler;
+            };
 
-            hideOnStartupCheckbox.CheckedChanged -= hideOnStartupCheckbox_CheckedChanged;
-            hideOnStartupCheckbox.Checked = hideOnStartup;
-            hideOnStartupCheckbox.CheckedChanged += hideOnStartupCheckbox_CheckedChanged;
+            setChecked(desktopScroll, desktopScrollCheckbox, desktopScrollCheckbox_CheckedChanged);
+            setChecked(hideOnStartup, hideOnStartupCheckbox, hideOnStartupCheckbox_CheckedChanged);
+        }
 
+        private void CheckForStartupShortcut()
+        {
             if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Startup) + SHORTCUT_FILENAME))
             {
                 IWshRuntimeLibrary.WshShellClass wsh = new IWshRuntimeLibrary.WshShellClass();
