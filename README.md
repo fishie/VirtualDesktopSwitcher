@@ -6,6 +6,9 @@ Finally virtual desktops have come to Windows! Hallelujah! But, virtual desktops
 
 Also check out https://www.facebook.com/Win10VirtualDesktopSwitcher which might be more interesting for you.
 
+## Download
+First version, use at your own risk: [vds-v1.zip](https://github.com/fishie/VirtualDesktopSwitcher/releases/download/v1/vds-v1.zip)
+
 ## How to use:
 1. Download zip-file.
 2. Extract zip file somewhere of your choice (for example "My Documents\vds\").
