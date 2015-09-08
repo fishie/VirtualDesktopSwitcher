@@ -148,7 +148,7 @@ namespace VirtualDesktopSwitcher
         {
             if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Startup) + SHORTCUT_FILENAME))
             {
-                IWshRuntimeLibrary.WshShellClass wsh = new IWshRuntimeLibrary.WshShellClass();
+                IWshRuntimeLibrary.WshShell wsh = new IWshRuntimeLibrary.WshShell();
                 IWshRuntimeLibrary.IWshShortcut shortcut = wsh.CreateShortcut(
                     Environment.GetFolderPath(Environment.SpecialFolder.Startup) + SHORTCUT_FILENAME)
                     as IWshRuntimeLibrary.IWshShortcut;
@@ -363,7 +363,7 @@ namespace VirtualDesktopSwitcher
         {
             if (loadOnWindowsStartupCheckbox.Checked)
             {
-                IWshRuntimeLibrary.WshShellClass wsh = new IWshRuntimeLibrary.WshShellClass();
+                IWshRuntimeLibrary.WshShell wsh = new IWshRuntimeLibrary.WshShell();
                 IWshRuntimeLibrary.IWshShortcut shortcut = wsh.CreateShortcut(
                     Environment.GetFolderPath(Environment.SpecialFolder.Startup) + SHORTCUT_FILENAME)
                     as IWshRuntimeLibrary.IWshShortcut;
