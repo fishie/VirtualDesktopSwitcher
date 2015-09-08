@@ -15,7 +15,7 @@ Also check out https://www.facebook.com/Win10VirtualDesktopSwitcher which might 
 6. Click the "Load on Windows startup" checkbox to automatically run this program when Windows starts.
 7. Click the "Start hidden" checkbox to start the program minimised to the tray. Useful when using the "Load on Windows startup" option.
 8. Clicking anywhere in the main window that is not a checkbox or rectangle config will also hide the main window.
-
+9. The rectangle config allow you to configure other areas you can scroll in to switch virtual desktops. For example I have the area where my Task View button is in the taskbar configured as a rectangle. The default config configures a rectangle in the top left corner of your screen which you can delete or change at your will using the editor in the main window or simply changing the config.json file if you speak JSON.
 
 ## Copyright
 ```
