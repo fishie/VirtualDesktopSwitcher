@@ -61,12 +61,12 @@
             this.exitMenuItem});
             this.trayIconRightClickMenu.Name = "trayIconRightClickMenu";
             this.trayIconRightClickMenu.ShowImageMargin = false;
-            this.trayIconRightClickMenu.Size = new System.Drawing.Size(128, 48);
+            this.trayIconRightClickMenu.Size = new System.Drawing.Size(68, 26);
             // 
             // exitMenuItem
             // 
             this.exitMenuItem.Name = "exitMenuItem";
-            this.exitMenuItem.Size = new System.Drawing.Size(127, 22);
+            this.exitMenuItem.Size = new System.Drawing.Size(67, 22);
             this.exitMenuItem.Text = "Exit";
             this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
             // 
@@ -75,9 +75,9 @@
             this.desktopScrollCheckbox.AutoSize = true;
             this.desktopScrollCheckbox.Location = new System.Drawing.Point(34, 39);
             this.desktopScrollCheckbox.Name = "desktopScrollCheckbox";
-            this.desktopScrollCheckbox.Size = new System.Drawing.Size(90, 17);
+            this.desktopScrollCheckbox.Size = new System.Drawing.Size(93, 17);
             this.desktopScrollCheckbox.TabIndex = 1;
-            this.desktopScrollCheckbox.Text = "desktopScroll";
+            this.desktopScrollCheckbox.Text = "Desktop scroll";
             this.desktopScrollCheckbox.UseVisualStyleBackColor = true;
             this.desktopScrollCheckbox.CheckedChanged += new System.EventHandler(this.desktopScrollCheckbox_CheckedChanged);
             // 
@@ -86,9 +86,9 @@
             this.hideOnStartupCheckbox.AutoSize = true;
             this.hideOnStartupCheckbox.Location = new System.Drawing.Point(34, 63);
             this.hideOnStartupCheckbox.Name = "hideOnStartupCheckbox";
-            this.hideOnStartupCheckbox.Size = new System.Drawing.Size(94, 17);
+            this.hideOnStartupCheckbox.Size = new System.Drawing.Size(83, 17);
             this.hideOnStartupCheckbox.TabIndex = 2;
-            this.hideOnStartupCheckbox.Text = "hideOnStartup";
+            this.hideOnStartupCheckbox.Text = "Start hidden";
             this.hideOnStartupCheckbox.UseVisualStyleBackColor = true;
             this.hideOnStartupCheckbox.CheckedChanged += new System.EventHandler(this.hideOnStartupCheckbox_CheckedChanged);
             // 
