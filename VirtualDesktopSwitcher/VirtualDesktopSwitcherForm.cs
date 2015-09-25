@@ -138,7 +138,7 @@ namespace VirtualDesktopSwitcher
 
                         rectangles.Add(new Rectangle(x, y, width, height));
 
-                        var node = treeView1.Nodes.Add("rectangle " + (treeView1.Nodes.Count + 1));
+                        var node = rectanglesTreeView.Nodes.Add("rectangle " + (rectanglesTreeView.Nodes.Count + 1));
 
                         Action<string, int> addSubNode = (label, value) =>
                         {
@@ -167,6 +167,7 @@ namespace VirtualDesktopSwitcher
             };
 
             setChecked(desktopScroll, desktopScrollCheckbox, desktopScrollCheckbox_CheckedChanged);
+            setChecked(taskViewScroll, taskViewScrollCheckbox, taskViewScrollCheckbox_CheckedChanged);
             setChecked(hideOnStartup, hideOnStartupCheckbox, hideOnStartupCheckbox_CheckedChanged);
         }
 
@@ -401,6 +402,13 @@ namespace VirtualDesktopSwitcher
             UpdateConfigJsonFile();
         }
 
+        private void taskViewScrollCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            taskViewScroll = taskViewScrollCheckbox.Checked;
+            jsonConfig.taskViewScroll = taskViewScroll;
+            UpdateConfigJsonFile();
+        }
+
         private void hideOnStartupCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             jsonConfig.hideOnStartup = hideOnStartupCheckbox.Checked;
@@ -471,8 +479,8 @@ namespace VirtualDesktopSwitcher
 
         private void addRectangleToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var node = treeView1.Nodes.Add("rectangle " + (treeView1.Nodes.Count + 1));
-            treeView1.SelectedNode = node;
+            var node = rectanglesTreeView.Nodes.Add("rectangle " + (rectanglesTreeView.Nodes.Count + 1));
+            rectanglesTreeView.SelectedNode = node;
 
             Action<string, string> addSubNode = (label, value) =>
             {
@@ -507,18 +515,30 @@ namespace VirtualDesktopSwitcher
 
         private void treeView1_MouseDown(object sender, MouseEventArgs e)
         {
-            var node = treeView1.GetNodeAt(e.Location);
+            var node = rectanglesTreeView.GetNodeAt(e.Location);
             if (node != null && node.Level == 0)
             {
-                treeView1.SelectedNode = node;
+                rectanglesTreeView.SelectedNode = node;
                 clickedNode = node;
                 treeViewRightClickMenuRemove.Items[0].Text = "Remove rectangle " + (node.Index + 1);
-                treeView1.ContextMenuStrip = treeViewRightClickMenuRemove;
+                rectanglesTreeView.ContextMenuStrip = treeViewRightClickMenuRemove;
             }
             else
             {
-                treeView1.ContextMenuStrip = treeViewRightClickMenuAdd;
+                rectanglesTreeView.ContextMenuStrip = treeViewRightClickMenuAdd;
             }
+        }
+
+        private void ToggleRectangles(object sender = null, EventArgs e = null)
+        {
+            rectanglesTreeView.Visible ^= true;
+            Height += (rectanglesTreeView.Visible? 1 : -1) * rectanglesTreeView.Height;
+            label1.Text = (rectanglesTreeView.Visible ? "-" : "+") + label1.Text.Substring(1);
+        }
+
+        private void VirtualDesktopSwitcherForm_Shown(object sender, EventArgs e)
+        {
+            ToggleRectangles();
         }
     }
 }
