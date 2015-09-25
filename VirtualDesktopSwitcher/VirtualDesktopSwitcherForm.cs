@@ -28,6 +28,19 @@ namespace VirtualDesktopSwitcher
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
         private static extern int GetWindowText(IntPtr hWnd, StringBuilder title, int size);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+        private static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+        private static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+        private static extern IntPtr FindWindow(string lpszClass, string lpszWindow);
+
         #endregion
 
         #region Structs
@@ -70,7 +83,9 @@ namespace VirtualDesktopSwitcher
         private static VirtualDesktopSwitcherForm formInstance;
         private static IKeyboardSimulator keyboardSimulator;
         private static List<Rectangle> rectangles;
+        private static IntPtr StartMenu;
         private static bool desktopScroll;
+        private static bool taskViewScroll;
         private static int hHook = 0;
 
         private HookProc mouseHookProcedure; // Need to keep a reference to hookproc or otherwise it will be GC:ed.
@@ -93,6 +108,16 @@ namespace VirtualDesktopSwitcher
             ReadConfig();
             CheckForStartupShortcut();
             AttachHook();
+            FindStartMenu();
+        }
+
+        public void FindStartMenu()
+        {
+            StartMenu = FindWindow("Shell_TrayWnd", null);
+            if (StartMenu == IntPtr.Zero)
+            {
+                MessageBox.Show("Failed to find start menu!");
+            }
         }
 
         private void ReadConfig()
@@ -130,6 +155,7 @@ namespace VirtualDesktopSwitcher
                 }
 
                 desktopScroll = jsonConfig.desktopScroll ?? false;
+                taskViewScroll = jsonConfig.taskViewScroll ?? false;
                 hideOnStartup = jsonConfig.hideOnStartup ?? false;
             }
 
@@ -241,6 +267,36 @@ namespace VirtualDesktopSwitcher
             return false;
         }
 
+        private static string GetTitleFromWindowUnderPoint(POINT point)
+        {
+            var title = new StringBuilder(10);
+            GetWindowText(WindowFromPoint(point), title, 11);
+            return title.ToString();
+        }
+
+        private static bool IsScrollPoint(POINT point)
+        {
+            var title = GetTitleFromWindowUnderPoint(point);
+
+            if ((rectangles.Count > 0 && CheckPoint(point)) ||
+                (desktopScroll && title == "FolderView") ||
+                (taskViewScroll && title == "Task View"))
+            {
+                return true;
+            }
+            return false;
+        }
+        
+        private static bool IsVirtualBoxInForeground()
+        {
+            var foregroundWindow = GetForegroundWindow();
+            var className = new StringBuilder(7);
+            var title = new StringBuilder(255);
+            GetClassName(foregroundWindow, className, 8);
+            GetWindowText(foregroundWindow, title, 256);
+            return className.ToString() == "QWidget" && title.ToString().EndsWith("VirtualBox");
+        }
+
         public static int LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam)
         {
             if (nCode < 0)
@@ -248,43 +304,40 @@ namespace VirtualDesktopSwitcher
                 return CallNextHookEx(hHook, nCode, wParam, lParam);
             }
 
-            if (formInstance.Visible)
-            {
-                var msllHookStruct = Marshal.PtrToStructure<MSLLHOOKSTRUCT>(lParam);
-                formInstance.Text = string.Format("{0} {1}", msllHookStruct.pt.x, msllHookStruct.pt.y);
-
-                if (CheckPoint(msllHookStruct.pt))
-                {
-                    formInstance.BackColor = Color.Yellow;
-                }
-                else
-                {
-                    formInstance.BackColor = SystemColors.Control;
-                }
-            }
-
             if (wParam.ToInt32() == WM_MOUSEWHEEL)
             {
                 var msllHookStruct = Marshal.PtrToStructure<MSLLHOOKSTRUCT>(lParam);
-                var windowTitle = new StringBuilder(10);
-                GetWindowText(WindowFromPoint(msllHookStruct.pt), windowTitle, 11);
 
-                if (CheckPoint(msllHookStruct.pt) || (desktopScroll && windowTitle.ToString() == "FolderView"))
+                if (IsScrollPoint(msllHookStruct.pt))
                 {
-                    if (wParam.ToInt32() == WM_MOUSEWHEEL)
-                    {
-                        int highOrder = msllHookStruct.mouseData >> 16;
+                    int highOrder = msllHookStruct.mouseData >> 16;
 
-                        if (highOrder > 0)
-                        {
-                            CtrlWinKey(VirtualKeyCode.LEFT);
-                        }
-                        else
-                        {
-                            CtrlWinKey(VirtualKeyCode.RIGHT);
-                        }
+                    if (IsVirtualBoxInForeground())
+                    {
+                        formInstance.Opacity = 0;
+                        formInstance.Show();
+                        formInstance.Activate();
+                        SetForegroundWindow(StartMenu);
+                        formInstance.Hide();
+                        formInstance.Opacity = 1;
+                    }
+
+                    if (highOrder > 0)
+                    {
+                        CtrlWinKey(VirtualKeyCode.LEFT);
+                    }
+                    else
+                    {
+                        CtrlWinKey(VirtualKeyCode.RIGHT);
                     }
                 }
+            }
+
+            if (formInstance.Visible)
+            {
+                var point = Marshal.PtrToStructure<MSLLHOOKSTRUCT>(lParam).pt;
+                formInstance.Text = string.Format("{0} {1}", point.x, point.y);
+                formInstance.BackColor = IsScrollPoint(point) ? Color.Yellow : SystemColors.Control;
             }
 
             return CallNextHookEx(hHook, nCode, wParam, lParam);
