@@ -44,8 +44,8 @@
             this.taskViewButtonScrollCheckbox = new System.Windows.Forms.CheckBox();
             this.advancedLabel = new System.Windows.Forms.Label();
             this.panel1 = new VirtualDesktopSwitcher.Code.CustomFormControls.TitlePanel();
-            this.minimizeButton = new VirtualDesktopSwitcher.Code.CustomFormControls.UnselectableButton();
-            this.exitButton = new VirtualDesktopSwitcher.Code.CustomFormControls.UnselectableButton();
+            this.minimizeButton = new VirtualDesktopSwitcher.Code.CustomFormControls.MinimizeButton();
+            this.exitButton = new VirtualDesktopSwitcher.Code.CustomFormControls.ExitButton();
             this.formTitle = new VirtualDesktopSwitcher.Code.CustomFormControls.TitleLabel();
             this.trayIconRightClickMenu.SuspendLayout();
             this.treeViewRightClickMenuAdd.SuspendLayout();
@@ -187,21 +187,20 @@
             // minimizeButton
             // 
             this.minimizeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.minimizeButton.Location = new System.Drawing.Point(230, 3);
+            this.minimizeButton.Location = new System.Drawing.Point(237, 3);
             this.minimizeButton.Name = "minimizeButton";
-            this.minimizeButton.Size = new System.Drawing.Size(23, 19);
+            this.minimizeButton.Size = new System.Drawing.Size(19, 19);
             this.minimizeButton.TabIndex = 2;
-            this.minimizeButton.TabStop = false;
             this.minimizeButton.UseVisualStyleBackColor = false;
             this.minimizeButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ToggleVisibilityWithMouseClick);
             // 
             // exitButton
             // 
-            this.exitButton.BackColor = System.Drawing.Color.Red;
+            this.exitButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.exitButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.exitButton.Location = new System.Drawing.Point(258, 3);
+            this.exitButton.Location = new System.Drawing.Point(262, 3);
             this.exitButton.Name = "exitButton";
-            this.exitButton.Size = new System.Drawing.Size(23, 19);
+            this.exitButton.Size = new System.Drawing.Size(19, 19);
             this.exitButton.TabIndex = 1;
             this.exitButton.UseVisualStyleBackColor = false;
             this.exitButton.Click += new System.EventHandler(this.exitMenuItem_Click);
@@ -263,8 +262,8 @@
         private System.Windows.Forms.Label advancedLabel;
         private VirtualDesktopSwitcher.Code.CustomFormControls.TitlePanel panel1;
         private VirtualDesktopSwitcher.Code.CustomFormControls.TitleLabel formTitle;
-        private VirtualDesktopSwitcher.Code.CustomFormControls.UnselectableButton exitButton;
-        private VirtualDesktopSwitcher.Code.CustomFormControls.UnselectableButton minimizeButton;
+        private VirtualDesktopSwitcher.Code.CustomFormControls.ExitButton exitButton;
+        private VirtualDesktopSwitcher.Code.CustomFormControls.MinimizeButton minimizeButton;
     }
 }
 

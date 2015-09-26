@@ -50,6 +50,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Code\CustomFormControls\ExitButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Code\CustomFormControls\MinimizeButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Code\CustomFormControls\UnselectableButton.cs">
       <SubType>Component</SubType>
     </Compile>
