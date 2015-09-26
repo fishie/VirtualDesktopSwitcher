@@ -50,17 +50,27 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HiddenContext.cs" />
-    <Compile Include="Rectangle.cs" />
-    <Compile Include="VirtualDesktopSwitcherForm.cs">
+    <Compile Include="Code\CustomFormControls\UnselectableButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Code\HiddenContext.cs" />
+    <Compile Include="Code\Rectangle.cs" />
+    <Compile Include="Code\CustomFormControls\TitleLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Code\CustomFormControls\TitlePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Code\VirtualDesktopSwitcherForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="VirtualDesktopSwitcherForm.Designer.cs">
+    <Compile Include="Code\VirtualDesktopSwitcherForm.Designer.cs">
       <DependentUpon>VirtualDesktopSwitcherForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Program.cs" />
+    <Compile Include="Code\Program.cs" />
+    <Compile Include="Code\WinApi.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="VirtualDesktopSwitcherForm.resx">
+    <EmbeddedResource Include="Code\VirtualDesktopSwitcherForm.resx">
       <DependentUpon>VirtualDesktopSwitcherForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -87,7 +97,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="favicon.ico" />
+    <Content Include="Resources\favicon.ico" />
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>

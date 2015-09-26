@@ -8,6 +8,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
+using VirtualDesktopSwitcher.Code;
 
 namespace VirtualDesktopSwitcher
 {
@@ -68,15 +69,6 @@ namespace VirtualDesktopSwitcher
         }
         #endregion
 
-        #region MessageConstants
-        // For other hook types, you can obtain these values from Winuser.h in the Microsoft SDK.
-        public const int WH_MOUSE_LL = 14;
-        public const int WM_MOUSEWHEEL = 522;
-        public const int WM_SYSCOMMAND = 274;
-        public const int SC_MAXIMIZE = 0xF030;
-        public const int SC_MINIMIZE = 0xF020;
-        #endregion
-
         public bool hideOnStartup { get; private set; }
         public delegate int HookProc(int nCode, IntPtr wParam, IntPtr lParam);
 
@@ -111,7 +103,171 @@ namespace VirtualDesktopSwitcher
             FindStartMenu();
         }
 
-        public void FindStartMenu()
+        #region Event handlers
+        private void VirtualDesktopSwitcherForm_VisibleChanged(object sender, EventArgs e)
+        {
+            if (Visible) ShowRectangles();
+            else HideRectangles();
+        }
+
+        private void desktopScrollCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            desktopScroll = desktopScrollCheckbox.Checked;
+            jsonConfig.desktopScroll = desktopScroll;
+            UpdateConfigJsonFile();
+        }
+
+        private void taskViewButtonScrollCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            taskViewScroll = taskViewButtonScrollCheckbox.Checked;
+            jsonConfig.taskViewScroll = taskViewScroll;
+            UpdateConfigJsonFile();
+        }
+
+        private void hideOnStartupCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            jsonConfig.hideOnStartup = hideOnStartupCheckbox.Checked;
+            UpdateConfigJsonFile();
+        }
+
+        private void ToggleVisibilityWithMouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                Visible = !Visible;
+                TopMost = Visible;
+            }
+        }
+
+        private void exitMenuItem_Click(object sender, EventArgs e)
+        {
+            notifyIcon.Visible = false;
+            Application.Exit();
+        }
+
+        private void loadOnWindowsStartupCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (loadOnWindowsStartupCheckbox.Checked)
+            {
+                IWshRuntimeLibrary.WshShell wsh = new IWshRuntimeLibrary.WshShell();
+                IWshRuntimeLibrary.IWshShortcut shortcut = wsh.CreateShortcut(
+                    Environment.GetFolderPath(Environment.SpecialFolder.Startup) + SHORTCUT_FILENAME)
+                    as IWshRuntimeLibrary.IWshShortcut;
+                shortcut.Arguments = "";
+                shortcut.TargetPath = System.Reflection.Assembly.GetEntryAssembly().Location;
+                shortcut.Description = "VisualDesktopSwitcher";
+                shortcut.WorkingDirectory = Environment.CurrentDirectory;
+                shortcut.Save();
+            }
+            else
+            {
+                var path = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
+                File.Delete(path + SHORTCUT_FILENAME);
+            }
+        }
+
+        private void VirtualDesktopSwitcherForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            notifyIcon.Visible = false;
+            Application.Exit();
+        }
+
+        private void rectanglesTreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        {
+            if (e.Node.Level == 2)
+            {
+                e.Node.TreeView.LabelEdit = true;
+                e.Node.BeginEdit();
+            }
+        }
+
+        private void rectanglesTreeView_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
+        {
+            int rectangleIndex = e.Node.Parent.Parent.Index;
+            string propertyName = e.Node.Parent.Text;
+            int value;
+
+            if (int.TryParse(e.Label, out value))
+            {
+                rectangles[rectangleIndex].Set(propertyName, value);
+                jsonConfig.rectangles[rectangleIndex][propertyName] = value;
+                UpdateConfigJsonFile();
+                HideRectangles();
+                ShowRectangles();
+            }
+            else
+            {
+                e.CancelEdit = true;
+            }
+            e.Node.TreeView.LabelEdit = false;
+        }
+
+        private void addRectangleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var node = rectanglesTreeView.Nodes.Add("rectangle " + (rectanglesTreeView.Nodes.Count + 1));
+            rectanglesTreeView.SelectedNode = node;
+
+            Action<string, string> addSubNode = (label, value) =>
+            {
+                var subnode = node.Nodes.Add(label);
+                subnode.Nodes.Add(value);
+                subnode.ExpandAll();
+            };
+
+            addSubNode("x", "0");
+            addSubNode("y", "0");
+            addSubNode("width", "50");
+            addSubNode("height", "40");
+
+            rectangles.Add(new Rectangle(0, 0, 50, 40));
+            var jObject = JsonConvert.DeserializeObject(@"{""x"": 0, ""y"": 0, ""width"": 50, ""height"": 40}");
+            jsonConfig.rectangles.Add(jObject);
+            HideRectangles();
+            ShowRectangles();
+            UpdateConfigJsonFile();
+        }
+
+        private void removeRectangleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var index = clickedNode.Index;
+            clickedNode.Remove();
+            rectangles.RemoveAt(index);
+            jsonConfig.rectangles.RemoveAt(index);
+            HideRectangles();
+            ShowRectangles();
+            UpdateConfigJsonFile();
+        }
+
+        private void rectanglesTreeView_MouseDown(object sender, MouseEventArgs e)
+        {
+            var node = rectanglesTreeView.GetNodeAt(e.Location);
+            if (node != null && node.Level == 0)
+            {
+                rectanglesTreeView.SelectedNode = node;
+                clickedNode = node;
+                treeViewRightClickMenuRemove.Items[0].Text = "Remove rectangle " + (node.Index + 1);
+                rectanglesTreeView.ContextMenuStrip = treeViewRightClickMenuRemove;
+            }
+            else
+            {
+                rectanglesTreeView.ContextMenuStrip = treeViewRightClickMenuAdd;
+            }
+        }
+
+        private void ToggleRectangles(object sender = null, EventArgs e = null)
+        {
+            rectanglesTreeView.Visible ^= true;
+            Height += (rectanglesTreeView.Visible ? 1 : -1) * rectanglesTreeView.Height;
+            advancedLabel.Text = (rectanglesTreeView.Visible ? "-" : "+") + advancedLabel.Text.Substring(1);
+        }
+
+        private void VirtualDesktopSwitcherForm_Shown(object sender, EventArgs e)
+        {
+            ToggleRectangles();
+        }
+        #endregion
+
+        private void FindStartMenu()
         {
             StartMenu = FindWindow("Shell_TrayWnd", null);
             if (StartMenu == IntPtr.Zero)
@@ -167,7 +323,7 @@ namespace VirtualDesktopSwitcher
             };
 
             setChecked(desktopScroll, desktopScrollCheckbox, desktopScrollCheckbox_CheckedChanged);
-            setChecked(taskViewScroll, taskViewScrollCheckbox, taskViewScrollCheckbox_CheckedChanged);
+            setChecked(taskViewScroll, taskViewButtonScrollCheckbox, taskViewButtonScrollCheckbox_CheckedChanged);
             setChecked(hideOnStartup, hideOnStartupCheckbox, hideOnStartupCheckbox_CheckedChanged);
         }
 
@@ -196,16 +352,30 @@ namespace VirtualDesktopSwitcher
             }
         }
         
+        public void ExposeWndProc(ref Message m)
+        {
+            WndProc(ref m);
+        }
+
         protected override void WndProc(ref Message m)
         {
-            if (m.Msg == WM_SYSCOMMAND)
+            // Disable maximize and minimize system commands.
+            if (m.Msg == WinApi.WM_SYSCOMMAND)
             {
                 int wParam = m.WParam.ToInt32();
-                if (wParam == SC_MAXIMIZE || wParam == SC_MINIMIZE)
+                if (wParam == WinApi.SC_MAXIMIZE || wParam == WinApi.SC_MINIMIZE)
                 {
                     return;
                 }
             }
+            // Enable dragging of window by clicking in the form.
+            else if (m.Msg == WinApi.WM_NCHITTEST)
+            {
+                base.WndProc(ref m);
+                m.Result = (IntPtr)(WinApi.HT_CAPTION);
+                return;
+            }
+
             base.WndProc(ref m);
         }
 
@@ -214,7 +384,7 @@ namespace VirtualDesktopSwitcher
             if (hHook == 0)
             {
                 mouseHookProcedure = new HookProc(LowLevelMouseProc);
-                hHook = SetWindowsHookEx(WH_MOUSE_LL, mouseHookProcedure, IntPtr.Zero, 0);
+                hHook = SetWindowsHookEx(WinApi.WH_MOUSE_LL, mouseHookProcedure, IntPtr.Zero, 0);
 
                 // If the SetWindowsHookEx function fails.
                 if (hHook == 0)
@@ -305,7 +475,7 @@ namespace VirtualDesktopSwitcher
                 return CallNextHookEx(hHook, nCode, wParam, lParam);
             }
 
-            if (wParam.ToInt32() == WM_MOUSEWHEEL)
+            if (wParam.ToInt32() == WinApi.WM_MOUSEWHEEL)
             {
                 var msllHookStruct = Marshal.PtrToStructure<MSLLHOOKSTRUCT>(lParam);
 
@@ -337,27 +507,14 @@ namespace VirtualDesktopSwitcher
             if (formInstance.Visible)
             {
                 var point = Marshal.PtrToStructure<MSLLHOOKSTRUCT>(lParam).pt;
-                formInstance.Text = string.Format("{0} {1}", point.x, point.y);
+                formInstance.formTitle.Text = string.Format("{0} {1}", point.x, point.y);
                 formInstance.BackColor = IsScrollPoint(point) ? Color.Yellow : SystemColors.Control;
             }
 
             return CallNextHookEx(hHook, nCode, wParam, lParam);
         }
 
-        private void ToggleVisibilityWithMouseClick(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
-            {
-                Visible = !Visible;
-                TopMost = Visible;
-            }
-        }
 
-        private void exitMenuItem_Click(object sender, EventArgs e)
-        {
-            notifyIcon.Visible = false;
-            Application.Exit();
-        }
 
         private void ShowRectangles()
         {
@@ -389,156 +546,9 @@ namespace VirtualDesktopSwitcher
             forms.Clear();
         }
 
-        private void VirtualDesktopSwitcherForm_VisibleChanged(object sender, EventArgs e)
-        {
-            if (Visible) ShowRectangles();
-            else HideRectangles();
-        }
-
-        private void desktopScrollCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            desktopScroll = desktopScrollCheckbox.Checked;
-            jsonConfig.desktopScroll = desktopScroll;
-            UpdateConfigJsonFile();
-        }
-
-        private void taskViewScrollCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            taskViewScroll = taskViewScrollCheckbox.Checked;
-            jsonConfig.taskViewScroll = taskViewScroll;
-            UpdateConfigJsonFile();
-        }
-
-        private void hideOnStartupCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            jsonConfig.hideOnStartup = hideOnStartupCheckbox.Checked;
-            UpdateConfigJsonFile();
-        }
-
         private void UpdateConfigJsonFile()
         {
             File.WriteAllText(CONFIG_FILENAME, JsonConvert.SerializeObject(jsonConfig, Formatting.Indented));
-        }
-
-        private void loadOnWindowsStartupCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (loadOnWindowsStartupCheckbox.Checked)
-            {
-                IWshRuntimeLibrary.WshShell wsh = new IWshRuntimeLibrary.WshShell();
-                IWshRuntimeLibrary.IWshShortcut shortcut = wsh.CreateShortcut(
-                    Environment.GetFolderPath(Environment.SpecialFolder.Startup) + SHORTCUT_FILENAME)
-                    as IWshRuntimeLibrary.IWshShortcut;
-                shortcut.Arguments = "";
-                shortcut.TargetPath = System.Reflection.Assembly.GetEntryAssembly().Location;
-                shortcut.Description = "VisualDesktopSwitcher";
-                shortcut.WorkingDirectory = Environment.CurrentDirectory;
-                shortcut.Save();
-            }
-            else
-            {
-                var path = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
-                File.Delete(path + SHORTCUT_FILENAME);
-            }
-        }
-
-        private void VirtualDesktopSwitcherForm_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            notifyIcon.Visible = false;
-            Application.Exit();
-        }
-
-        private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
-        {
-            if (e.Node.Level == 2)
-            {
-                e.Node.TreeView.LabelEdit = true;
-                e.Node.BeginEdit();
-            }
-        }
-
-        private void treeView1_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
-        {
-            int rectangleIndex = e.Node.Parent.Parent.Index;
-            string propertyName = e.Node.Parent.Text;
-            int value;
-
-            if (int.TryParse(e.Label, out value))
-            {
-                rectangles[rectangleIndex].Set(propertyName, value);
-                jsonConfig.rectangles[rectangleIndex][propertyName] = value;
-                UpdateConfigJsonFile();
-                HideRectangles();
-                ShowRectangles();
-            }
-            else
-            {
-                e.CancelEdit = true;
-            }
-            e.Node.TreeView.LabelEdit = false;
-        }
-
-        private void addRectangleToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var node = rectanglesTreeView.Nodes.Add("rectangle " + (rectanglesTreeView.Nodes.Count + 1));
-            rectanglesTreeView.SelectedNode = node;
-
-            Action<string, string> addSubNode = (label, value) =>
-            {
-                var subnode = node.Nodes.Add(label);
-                subnode.Nodes.Add(value);
-                subnode.ExpandAll();
-            };
-
-            addSubNode("x", "0");
-            addSubNode("y", "0");
-            addSubNode("width", "50");
-            addSubNode("height", "40");
-
-            rectangles.Add(new Rectangle(0, 0, 50, 40));
-            var jObject = JsonConvert.DeserializeObject(@"{""x"": 0, ""y"": 0, ""width"": 50, ""height"": 40}");
-            jsonConfig.rectangles.Add(jObject);
-            HideRectangles();
-            ShowRectangles();
-            UpdateConfigJsonFile();
-        }
-
-        private void removeRectangleToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var index = clickedNode.Index;
-            clickedNode.Remove();
-            rectangles.RemoveAt(index);
-            jsonConfig.rectangles.RemoveAt(index);
-            HideRectangles();
-            ShowRectangles();
-            UpdateConfigJsonFile();
-        }
-
-        private void treeView1_MouseDown(object sender, MouseEventArgs e)
-        {
-            var node = rectanglesTreeView.GetNodeAt(e.Location);
-            if (node != null && node.Level == 0)
-            {
-                rectanglesTreeView.SelectedNode = node;
-                clickedNode = node;
-                treeViewRightClickMenuRemove.Items[0].Text = "Remove rectangle " + (node.Index + 1);
-                rectanglesTreeView.ContextMenuStrip = treeViewRightClickMenuRemove;
-            }
-            else
-            {
-                rectanglesTreeView.ContextMenuStrip = treeViewRightClickMenuAdd;
-            }
-        }
-
-        private void ToggleRectangles(object sender = null, EventArgs e = null)
-        {
-            rectanglesTreeView.Visible ^= true;
-            Height += (rectanglesTreeView.Visible? 1 : -1) * rectanglesTreeView.Height;
-            label1.Text = (rectanglesTreeView.Visible ? "-" : "+") + label1.Text.Substring(1);
-        }
-
-        private void VirtualDesktopSwitcherForm_Shown(object sender, EventArgs e)
-        {
-            ToggleRectangles();
         }
     }
 }
