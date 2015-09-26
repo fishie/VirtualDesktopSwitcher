@@ -5,15 +5,15 @@ namespace VirtualDesktopSwitcher.Code.CustomFormControls
 {
     class TitlePanel : Panel
     {
-        protected override void WndProc(ref Message m)
+        protected override void WndProc(ref Message message)
         {
-            if (m.Msg == WinApi.WM_NCHITTEST)
+            if (message.Msg == WinApi.WM_NCHITTEST)
             {
-                m.Result = (IntPtr)WinApi.HTTRANSPARENT;
+                message.Result = (IntPtr)WinApi.HTTRANSPARENT;
                 return;
             }
 
-            base.WndProc(ref m);
+            base.WndProc(ref message);
         }
     }
 }

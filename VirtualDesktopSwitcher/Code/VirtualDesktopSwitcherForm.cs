@@ -357,26 +357,17 @@ namespace VirtualDesktopSwitcher
             WndProc(ref m);
         }
 
-        protected override void WndProc(ref Message m)
+        protected override void WndProc(ref Message message)
         {
-            // Disable maximize and minimize system commands.
-            if (m.Msg == WinApi.WM_SYSCOMMAND)
-            {
-                int wParam = m.WParam.ToInt32();
-                if (wParam == WinApi.SC_MAXIMIZE || wParam == WinApi.SC_MINIMIZE)
-                {
-                    return;
-                }
-            }
             // Enable dragging of window by clicking in the form.
-            else if (m.Msg == WinApi.WM_NCHITTEST)
+            if (message.Msg == WinApi.WM_NCHITTEST)
             {
-                base.WndProc(ref m);
-                m.Result = (IntPtr)(WinApi.HT_CAPTION);
+                base.WndProc(ref message);
+                message.Result = (IntPtr)(WinApi.HT_CAPTION);
                 return;
             }
 
-            base.WndProc(ref m);
+            base.WndProc(ref message);
         }
 
         private void AttachHook()
