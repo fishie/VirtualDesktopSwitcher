@@ -211,7 +211,6 @@
             this.formTitle.Name = "formTitle";
             this.formTitle.Size = new System.Drawing.Size(224, 25);
             this.formTitle.TabIndex = 0;
-            this.formTitle.Text = "asdf";
             this.formTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // VirtualDesktopSwitcherForm
