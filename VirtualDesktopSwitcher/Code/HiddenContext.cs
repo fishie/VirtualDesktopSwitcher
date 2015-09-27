@@ -1,13 +1,13 @@
 ﻿using System.Windows.Forms;
 
-namespace VirtualDesktopSwitcher
+namespace VirtualDesktopSwitcher.Code
 {
     class HiddenContext : ApplicationContext
     {
         public HiddenContext()
         {
             var form = new VirtualDesktopSwitcherForm();
-            if (form.hideOnStartup == false) form.Show();
+            if (form.HideOnStartup == false) form.Show();
         }
     }
 }

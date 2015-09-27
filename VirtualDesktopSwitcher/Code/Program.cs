@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace VirtualDesktopSwitcher
+namespace VirtualDesktopSwitcher.Code
 {
     static class Program
     {

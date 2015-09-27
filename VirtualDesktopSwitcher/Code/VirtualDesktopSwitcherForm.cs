@@ -1,16 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows.Forms;
 using WindowsInput;
 using WindowsInput.Native;
-using System.Drawing;
-using System.Text;
-using System.Collections.Generic;
-using System.IO;
+using IWshRuntimeLibrary;
+using JetBrains.Annotations;
 using Newtonsoft.Json;
-using VirtualDesktopSwitcher.Code;
+using File = System.IO.File;
 
-namespace VirtualDesktopSwitcher
+namespace VirtualDesktopSwitcher.Code
 {
     public partial class VirtualDesktopSwitcherForm : Form
     {
@@ -69,21 +72,21 @@ namespace VirtualDesktopSwitcher
         }
         #endregion
 
-        public bool hideOnStartup { get; private set; }
+        public bool HideOnStartup { get; private set; }
         public delegate int HookProc(int nCode, IntPtr wParam, IntPtr lParam);
 
-        private static VirtualDesktopSwitcherForm formInstance;
-        private static IKeyboardSimulator keyboardSimulator;
-        private static List<Rectangle> rectangles;
-        private static IntPtr StartMenu;
-        private static bool desktopScroll;
-        private static bool taskViewScroll;
-        private static int hHook = 0;
+        private static VirtualDesktopSwitcherForm _formInstance;
+        private static IKeyboardSimulator _keyboardSimulator;
+        private static List<Rectangle> _rectangles;
+        private static IntPtr _startMenu;
+        private static bool _desktopScroll;
+        private static bool _taskViewScroll;
+        private static int _hHook;
 
-        private HookProc mouseHookProcedure; // Need to keep a reference to hookproc or otherwise it will be GC:ed.
-        private List<Form> forms;
-        private dynamic jsonConfig;
-        private TreeNode clickedNode;
+        private HookProc _mouseHookProcedure; // Need to keep a reference to hookproc or otherwise it will be GC:ed.
+        private readonly List<Form> _forms;
+        private dynamic _jsonConfig;
+        private TreeNode _clickedNode;
 
         private const string CONFIG_FILENAME = "config.json";
         private const string SHORTCUT_FILENAME = "\\VirtualDesktopSwitcher.lnk";
@@ -92,10 +95,10 @@ namespace VirtualDesktopSwitcher
         {
             InitializeComponent();
 
-            formInstance = this;
-            keyboardSimulator = (new InputSimulator()).Keyboard;
-            rectangles = new List<Rectangle>();
-            forms = new List<Form>();
+            _formInstance = this;
+            _keyboardSimulator = (new InputSimulator()).Keyboard;
+            _rectangles = new List<Rectangle>();
+            _forms = new List<Form>();
 
             ReadConfig();
             CheckForStartupShortcut();
@@ -112,21 +115,21 @@ namespace VirtualDesktopSwitcher
 
         private void desktopScrollCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            desktopScroll = desktopScrollCheckbox.Checked;
-            jsonConfig.desktopScroll = desktopScroll;
+            _desktopScroll = desktopScrollCheckbox.Checked;
+            _jsonConfig.desktopScroll = _desktopScroll;
             UpdateConfigJsonFile();
         }
 
         private void taskViewButtonScrollCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            taskViewScroll = taskViewButtonScrollCheckbox.Checked;
-            jsonConfig.taskViewScroll = taskViewScroll;
+            _taskViewScroll = taskViewButtonScrollCheckbox.Checked;
+            _jsonConfig.taskViewScroll = _taskViewScroll;
             UpdateConfigJsonFile();
         }
 
         private void hideOnStartupCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            jsonConfig.hideOnStartup = hideOnStartupCheckbox.Checked;
+            _jsonConfig.hideOnStartup = hideOnStartupCheckbox.Checked;
             UpdateConfigJsonFile();
         }
 
@@ -147,12 +150,13 @@ namespace VirtualDesktopSwitcher
 
         private void loadOnWindowsStartupCheckbox_CheckedChanged(object sender, EventArgs e)
         {
+            var shortcutPath = Environment.GetFolderPath(Environment.SpecialFolder.Startup) + SHORTCUT_FILENAME;
+
             if (loadOnWindowsStartupCheckbox.Checked)
             {
-                IWshRuntimeLibrary.WshShell wsh = new IWshRuntimeLibrary.WshShell();
-                IWshRuntimeLibrary.IWshShortcut shortcut = wsh.CreateShortcut(
-                    Environment.GetFolderPath(Environment.SpecialFolder.Startup) + SHORTCUT_FILENAME)
-                    as IWshRuntimeLibrary.IWshShortcut;
+                var wshShell = new WshShell();
+                var shortcut = wshShell.CreateShortcut(shortcutPath);
+
                 shortcut.Arguments = "";
                 shortcut.TargetPath = System.Reflection.Assembly.GetEntryAssembly().Location;
                 shortcut.Description = "VisualDesktopSwitcher";
@@ -161,8 +165,7 @@ namespace VirtualDesktopSwitcher
             }
             else
             {
-                var path = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
-                File.Delete(path + SHORTCUT_FILENAME);
+                File.Delete(shortcutPath);
             }
         }
 
@@ -189,8 +192,8 @@ namespace VirtualDesktopSwitcher
 
             if (int.TryParse(e.Label, out value))
             {
-                rectangles[rectangleIndex].Set(propertyName, value);
-                jsonConfig.rectangles[rectangleIndex][propertyName] = value;
+                _rectangles[rectangleIndex].Set(propertyName, value);
+                _jsonConfig.rectangles[rectangleIndex][propertyName] = value;
                 UpdateConfigJsonFile();
                 HideRectangles();
                 ShowRectangles();
@@ -219,9 +222,9 @@ namespace VirtualDesktopSwitcher
             addSubNode("width", "50");
             addSubNode("height", "40");
 
-            rectangles.Add(new Rectangle(0, 0, 50, 40));
+            _rectangles.Add(new Rectangle(0, 0, 50, 40));
             var jObject = JsonConvert.DeserializeObject(@"{""x"": 0, ""y"": 0, ""width"": 50, ""height"": 40}");
-            jsonConfig.rectangles.Add(jObject);
+            _jsonConfig.rectangles.Add(jObject);
             HideRectangles();
             ShowRectangles();
             UpdateConfigJsonFile();
@@ -229,10 +232,10 @@ namespace VirtualDesktopSwitcher
 
         private void removeRectangleToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var index = clickedNode.Index;
-            clickedNode.Remove();
-            rectangles.RemoveAt(index);
-            jsonConfig.rectangles.RemoveAt(index);
+            var index = _clickedNode.Index;
+            _clickedNode.Remove();
+            _rectangles.RemoveAt(index);
+            _jsonConfig.rectangles.RemoveAt(index);
             HideRectangles();
             ShowRectangles();
             UpdateConfigJsonFile();
@@ -244,8 +247,8 @@ namespace VirtualDesktopSwitcher
             if (node != null && node.Level == 0)
             {
                 rectanglesTreeView.SelectedNode = node;
-                clickedNode = node;
-                treeViewRightClickMenuRemove.Items[0].Text = "Remove rectangle " + (node.Index + 1);
+                _clickedNode = node;
+                treeViewRightClickMenuRemove.Items[0].Text = $"Remove rectangle {(node.Index + 1)}";
                 rectanglesTreeView.ContextMenuStrip = treeViewRightClickMenuRemove;
             }
             else
@@ -267,10 +270,10 @@ namespace VirtualDesktopSwitcher
         }
         #endregion
 
-        private void FindStartMenu()
+        private static void FindStartMenu()
         {
-            StartMenu = FindWindow("Shell_TrayWnd", null);
-            if (StartMenu == IntPtr.Zero)
+            _startMenu = FindWindow("Shell_TrayWnd", null);
+            if (_startMenu == IntPtr.Zero)
             {
                 MessageBox.Show("Failed to find start menu!");
             }
@@ -281,25 +284,25 @@ namespace VirtualDesktopSwitcher
             using (var streamReader = new StreamReader(CONFIG_FILENAME))
             {
                 string json = streamReader.ReadToEnd();
-                jsonConfig = JsonConvert.DeserializeObject(json);
+                _jsonConfig = JsonConvert.DeserializeObject(json);
 
-                if (jsonConfig.rectangles != null)
+                if (_jsonConfig.rectangles != null)
                 {
-                    foreach (var jsonRectangle in jsonConfig.rectangles)
+                    foreach (var jsonRectangle in _jsonConfig.rectangles)
                     {
                         int x = jsonRectangle.x;
                         int y = jsonRectangle.y;
                         int width = jsonRectangle.width;
                         int height = jsonRectangle.height;
 
-                        rectangles.Add(new Rectangle(x, y, width, height));
+                        _rectangles.Add(new Rectangle(x, y, width, height));
 
                         var node = rectanglesTreeView.Nodes.Add("rectangle " + (rectanglesTreeView.Nodes.Count + 1));
 
                         Action<string, int> addSubNode = (label, value) =>
                         {
                             var subnode = node.Nodes.Add(label);
-                            var subsubnode = subnode.Nodes.Add(value.ToString());
+                            subnode.Nodes.Add(value.ToString());
                             subnode.ExpandAll();
                         };
 
@@ -310,9 +313,9 @@ namespace VirtualDesktopSwitcher
                     }
                 }
 
-                desktopScroll = jsonConfig.desktopScroll ?? false;
-                taskViewScroll = jsonConfig.taskViewScroll ?? false;
-                hideOnStartup = jsonConfig.hideOnStartup ?? false;
+                _desktopScroll = _jsonConfig.desktopScroll ?? false;
+                _taskViewScroll = _jsonConfig.taskViewScroll ?? false;
+                HideOnStartup = _jsonConfig.hideOnStartup ?? false;
             }
 
             Action<bool, CheckBox, EventHandler> setChecked = (boolValue, checkBox, eventHandler) =>
@@ -322,27 +325,27 @@ namespace VirtualDesktopSwitcher
                 checkBox.CheckedChanged += eventHandler;
             };
 
-            setChecked(desktopScroll, desktopScrollCheckbox, desktopScrollCheckbox_CheckedChanged);
-            setChecked(taskViewScroll, taskViewButtonScrollCheckbox, taskViewButtonScrollCheckbox_CheckedChanged);
-            setChecked(hideOnStartup, hideOnStartupCheckbox, hideOnStartupCheckbox_CheckedChanged);
+            setChecked(_desktopScroll, desktopScrollCheckbox, desktopScrollCheckbox_CheckedChanged);
+            setChecked(_taskViewScroll, taskViewButtonScrollCheckbox, taskViewButtonScrollCheckbox_CheckedChanged);
+            setChecked(HideOnStartup, hideOnStartupCheckbox, hideOnStartupCheckbox_CheckedChanged);
         }
 
         private void CheckForStartupShortcut()
         {
-            if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.Startup) + SHORTCUT_FILENAME))
+            var shortcutPath = Environment.GetFolderPath(Environment.SpecialFolder.Startup) + SHORTCUT_FILENAME;
+
+            if (File.Exists(shortcutPath))
             {
-                IWshRuntimeLibrary.WshShell wsh = new IWshRuntimeLibrary.WshShell();
-                IWshRuntimeLibrary.IWshShortcut shortcut = wsh.CreateShortcut(
-                    Environment.GetFolderPath(Environment.SpecialFolder.Startup) + SHORTCUT_FILENAME)
-                    as IWshRuntimeLibrary.IWshShortcut;
+                var wshShell = new WshShell();
+                var shortcut = wshShell.CreateShortcut(shortcutPath);
+                
                 if (shortcut.TargetPath.ToLower() == System.Reflection.Assembly.GetEntryAssembly().Location.ToLower())
                 {
                     loadOnWindowsStartupCheckbox.Checked = true;
                 }
                 else
                 {
-                    var path = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
-                    File.Delete(path + SHORTCUT_FILENAME);
+                    File.Delete(shortcutPath);
                     loadOnWindowsStartupCheckbox.Checked = false;
                 }
             }
@@ -372,17 +375,16 @@ namespace VirtualDesktopSwitcher
 
         private void AttachHook()
         {
-            if (hHook == 0)
+            if (_hHook == 0)
             {
-                mouseHookProcedure = new HookProc(LowLevelMouseProc);
-                hHook = SetWindowsHookEx(WinApi.WH_MOUSE_LL, mouseHookProcedure, IntPtr.Zero, 0);
+                _mouseHookProcedure = LowLevelMouseProc;
+                _hHook = SetWindowsHookEx(WinApi.WH_MOUSE_LL, _mouseHookProcedure, IntPtr.Zero, 0);
 
                 // If the SetWindowsHookEx function fails.
-                if (hHook == 0)
+                if (_hHook == 0)
                 {
                     int error = Marshal.GetLastWin32Error();
                     MessageBox.Show("SetWindowsHookEx Failed " + error);
-                    return;
                 }
             }
             else
@@ -391,9 +393,10 @@ namespace VirtualDesktopSwitcher
             }
         }
 
+        [UsedImplicitly]
         private void DetachHook()
         {
-            bool ret = UnhookWindowsHookEx(hHook);
+            var ret = UnhookWindowsHookEx(_hHook);
 
             // If the UnhookWindowsHookEx function fails.
             if (ret == false)
@@ -401,32 +404,27 @@ namespace VirtualDesktopSwitcher
                 MessageBox.Show("UnhookWindowsHookEx Failed");
                 return;
             }
-            hHook = 0;
+            _hHook = 0;
         }
 
         private static void CtrlWinKey(VirtualKeyCode virtualKeyCode)
         {
-            keyboardSimulator.KeyDown(VirtualKeyCode.LCONTROL);
-            keyboardSimulator.KeyDown(VirtualKeyCode.LWIN);
+            _keyboardSimulator.KeyDown(VirtualKeyCode.LCONTROL);
+            _keyboardSimulator.KeyDown(VirtualKeyCode.LWIN);
 
-            keyboardSimulator.KeyPress(virtualKeyCode);
+            _keyboardSimulator.KeyPress(virtualKeyCode);
 
-            keyboardSimulator.KeyUp(VirtualKeyCode.LWIN);
-            keyboardSimulator.KeyUp(VirtualKeyCode.LCONTROL);
+            _keyboardSimulator.KeyUp(VirtualKeyCode.LWIN);
+            _keyboardSimulator.KeyUp(VirtualKeyCode.LCONTROL);
         }
 
         private static bool CheckPoint(POINT point)
         {
-            foreach (var rectangle in rectangles)
-            {
-                if (point.x > rectangle.Left && point.x < rectangle.Right &&
-                    point.y > rectangle.Top && point.y < rectangle.Bottom)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return _rectangles.Any(rectangle =>
+                point.x > rectangle.Left &&
+                point.x < rectangle.Right &&
+                point.y > rectangle.Top &&
+                point.y < rectangle.Bottom);
         }
 
         private static string GetTitleFromWindowUnderPoint(POINT point)
@@ -440,13 +438,9 @@ namespace VirtualDesktopSwitcher
         {
             var title = GetTitleFromWindowUnderPoint(point);
 
-            if ((rectangles.Count > 0 && CheckPoint(point)) ||
-                (desktopScroll && title == "FolderView") ||
-                (taskViewScroll && title == "Task View"))
-            {
-                return true;
-            }
-            return false;
+            return (_rectangles.Count > 0 && CheckPoint(point)) ||
+                   (_desktopScroll && title == "FolderView") ||
+                   (_taskViewScroll && title == "Task View");
         }
         
         private static bool IsVirtualBoxInForeground()
@@ -463,7 +457,7 @@ namespace VirtualDesktopSwitcher
         {
             if (nCode < 0)
             {
-                return CallNextHookEx(hHook, nCode, wParam, lParam);
+                return CallNextHookEx(_hHook, nCode, wParam, lParam);
             }
 
             if (wParam.ToInt32() == WinApi.WM_MOUSEWHEEL)
@@ -476,40 +470,33 @@ namespace VirtualDesktopSwitcher
 
                     if (IsVirtualBoxInForeground())
                     {
-                        formInstance.Opacity = 0;
-                        formInstance.Show();
-                        formInstance.Activate();
-                        SetForegroundWindow(StartMenu);
-                        formInstance.Hide();
-                        formInstance.Opacity = 1;
+                        _formInstance.Opacity = 0;
+                        _formInstance.Show();
+                        _formInstance.Activate();
+                        SetForegroundWindow(_startMenu);
+                        _formInstance.Hide();
+                        _formInstance.Opacity = 1;
                     }
 
-                    if (highOrder > 0)
-                    {
-                        CtrlWinKey(VirtualKeyCode.LEFT);
-                    }
-                    else
-                    {
-                        CtrlWinKey(VirtualKeyCode.RIGHT);
-                    }
+                    CtrlWinKey(highOrder > 0 ? VirtualKeyCode.LEFT : VirtualKeyCode.RIGHT);
                 }
             }
 
-            if (formInstance.Visible)
+            if (_formInstance.Visible)
             {
                 var point = Marshal.PtrToStructure<MSLLHOOKSTRUCT>(lParam).pt;
-                formInstance.formTitle.Text = string.Format("{0} {1}", point.x, point.y);
-                formInstance.BackColor = IsScrollPoint(point) ? Color.Yellow : SystemColors.Control;
+                _formInstance.formTitle.Text = $"{point.x} {point.y}";
+                _formInstance.BackColor = IsScrollPoint(point) ? Color.Yellow : SystemColors.Control;
             }
 
-            return CallNextHookEx(hHook, nCode, wParam, lParam);
+            return CallNextHookEx(_hHook, nCode, wParam, lParam);
         }
 
 
 
         private void ShowRectangles()
         {
-            foreach (var rectangle in rectangles)
+            foreach (var rectangle in _rectangles)
             {
                 var form = new Form
                 {
@@ -524,22 +511,23 @@ namespace VirtualDesktopSwitcher
                     ShowInTaskbar = false
                 };
                 form.Show();
-                forms.Add(form);
+                _forms.Add(form);
             }
         }
 
         private void HideRectangles()
         {
-            foreach (var form in forms)
+            foreach (var form in _forms)
             {
                 form.Close();
             }
-            forms.Clear();
+            _forms.Clear();
         }
 
         private void UpdateConfigJsonFile()
         {
-            File.WriteAllText(CONFIG_FILENAME, JsonConvert.SerializeObject(jsonConfig, Formatting.Indented));
+            var json = JsonConvert.SerializeObject(_jsonConfig, Formatting.Indented);
+            File.WriteAllText(CONFIG_FILENAME, json);
         }
     }
 }

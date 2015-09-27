@@ -1,4 +1,4 @@
-﻿namespace VirtualDesktopSwitcher
+﻿namespace VirtualDesktopSwitcher.Code
 {
     partial class VirtualDesktopSwitcherForm
     {
