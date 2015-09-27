@@ -17,36 +17,6 @@ namespace VirtualDesktopSwitcher.Code
 {
     public partial class VirtualDesktopSwitcherForm : Form
     {
-        #region WinAPIFunctions
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
-        public static extern int SetWindowsHookEx(int idHook, HookProc lpfn, IntPtr hInstance, int threadId);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
-        public static extern bool UnhookWindowsHookEx(int idHook);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
-        public static extern int CallNextHookEx(int idHook, int nCode, IntPtr wParam, IntPtr lParam);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
-        public static extern IntPtr WindowFromPoint(POINT point);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
-        private static extern int GetWindowText(IntPtr hWnd, StringBuilder title, int size);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
-        private static extern bool SetForegroundWindow(IntPtr hWnd);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
-        private static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
-        private static extern IntPtr GetForegroundWindow();
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
-        private static extern IntPtr FindWindow(string lpszClass, string lpszWindow);
-
-        #endregion
-
         #region Structs
         [StructLayout(LayoutKind.Sequential)]
         public struct POINT
@@ -272,7 +242,7 @@ namespace VirtualDesktopSwitcher.Code
 
         private static void FindStartMenu()
         {
-            _startMenu = FindWindow("Shell_TrayWnd", null);
+            _startMenu = WinApi.FindWindow("Shell_TrayWnd", null);
             if (_startMenu == IntPtr.Zero)
             {
                 MessageBox.Show("Failed to find start menu!");
@@ -378,7 +348,7 @@ namespace VirtualDesktopSwitcher.Code
             if (_hHook == 0)
             {
                 _mouseHookProcedure = LowLevelMouseProc;
-                _hHook = SetWindowsHookEx(WinApi.WH_MOUSE_LL, _mouseHookProcedure, IntPtr.Zero, 0);
+                _hHook = WinApi.SetWindowsHookEx(WinApi.WH_MOUSE_LL, _mouseHookProcedure, IntPtr.Zero, 0);
 
                 // If the SetWindowsHookEx function fails.
                 if (_hHook == 0)
@@ -396,7 +366,7 @@ namespace VirtualDesktopSwitcher.Code
         [UsedImplicitly]
         private void DetachHook()
         {
-            var ret = UnhookWindowsHookEx(_hHook);
+            var ret = WinApi.UnhookWindowsHookEx(_hHook);
 
             // If the UnhookWindowsHookEx function fails.
             if (ret == false)
@@ -430,7 +400,7 @@ namespace VirtualDesktopSwitcher.Code
         private static string GetTitleFromWindowUnderPoint(POINT point)
         {
             var title = new StringBuilder(10);
-            GetWindowText(WindowFromPoint(point), title, 11);
+            WinApi.GetWindowText(WinApi.WindowFromPoint(point), title, 11);
             return title.ToString();
         }
 
@@ -445,11 +415,11 @@ namespace VirtualDesktopSwitcher.Code
         
         private static bool IsVirtualBoxInForeground()
         {
-            var foregroundWindow = GetForegroundWindow();
+            var foregroundWindow = WinApi.GetForegroundWindow();
             var className = new StringBuilder(7);
             var title = new StringBuilder(255);
-            GetClassName(foregroundWindow, className, 8);
-            GetWindowText(foregroundWindow, title, 256);
+            WinApi.GetClassName(foregroundWindow, className, 8);
+            WinApi.GetWindowText(foregroundWindow, title, 256);
             return className.ToString() == "QWidget" && title.ToString().EndsWith("VirtualBox");
         }
 
@@ -457,7 +427,7 @@ namespace VirtualDesktopSwitcher.Code
         {
             if (nCode < 0)
             {
-                return CallNextHookEx(_hHook, nCode, wParam, lParam);
+                return WinApi.CallNextHookEx(_hHook, nCode, wParam, lParam);
             }
 
             if (wParam.ToInt32() == WinApi.WM_MOUSEWHEEL)
@@ -468,14 +438,16 @@ namespace VirtualDesktopSwitcher.Code
                 {
                     int highOrder = msllHookStruct.mouseData >> 16;
 
-                    if (IsVirtualBoxInForeground())
+                    if (IsVirtualBoxInForeground()) // VirtualBox eats our Ctrl-Win-Arrow keystrokes.
                     {
-                        _formInstance.Opacity = 0;
-                        _formInstance.Show();
-                        _formInstance.Activate();
-                        SetForegroundWindow(_startMenu);
-                        _formInstance.Hide();
-                        _formInstance.Opacity = 1;
+                        WinApi.SetForegroundWindow(_startMenu);
+
+                        // Ensure start menu has focus before we send keystrokes.
+                        var foregroundWindow = WinApi.GetForegroundWindow();
+                        while (foregroundWindow != _startMenu) 
+                        {
+                            foregroundWindow = WinApi.GetForegroundWindow();
+                        }
                     }
 
                     CtrlWinKey(highOrder > 0 ? VirtualKeyCode.LEFT : VirtualKeyCode.RIGHT);
@@ -489,7 +461,7 @@ namespace VirtualDesktopSwitcher.Code
                 _formInstance.BackColor = IsScrollPoint(point) ? Color.Yellow : SystemColors.Control;
             }
 
-            return CallNextHookEx(_hHook, nCode, wParam, lParam);
+            return WinApi.CallNextHookEx(_hHook, nCode, wParam, lParam);
         }
 
 
