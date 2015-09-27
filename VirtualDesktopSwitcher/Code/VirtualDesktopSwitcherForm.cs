@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using WindowsInput;
 using WindowsInput.Native;
@@ -444,8 +445,9 @@ namespace VirtualDesktopSwitcher.Code
 
                         // Ensure start menu has focus before we send keystrokes.
                         var foregroundWindow = WinApi.GetForegroundWindow();
-                        while (foregroundWindow != _startMenu) 
+                        while (foregroundWindow != _startMenu)
                         {
+                            Thread.Sleep(1);
                             foregroundWindow = WinApi.GetForegroundWindow();
                         }
                     }
