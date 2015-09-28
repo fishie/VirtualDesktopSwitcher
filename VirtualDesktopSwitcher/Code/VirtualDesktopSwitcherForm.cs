@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
 using System.Windows.Forms;
 using WindowsInput;
 using WindowsInput.Native;
@@ -414,14 +413,28 @@ namespace VirtualDesktopSwitcher.Code
                    (_taskViewScroll && title == "Task View");
         }
         
-        private static bool IsVirtualBoxInForeground()
+        private static IntPtr GetVirtualBoxInForeground()
         {
             var foregroundWindow = WinApi.GetForegroundWindow();
             var className = new StringBuilder(7);
             var title = new StringBuilder(255);
+
             WinApi.GetClassName(foregroundWindow, className, 8);
             WinApi.GetWindowText(foregroundWindow, title, 256);
-            return className.ToString() == "QWidget" && title.ToString().EndsWith("VirtualBox");
+
+            if (className.ToString() == "QWidget" && title.ToString().EndsWith("VirtualBox"))
+            {
+                var childWindow = WinApi.FindWindowEx(foregroundWindow, IntPtr.Zero, "QWidget", null);
+
+                if (childWindow == IntPtr.Zero) return IntPtr.Zero;
+
+                var childChildWindow = WinApi.FindWindowEx(childWindow, IntPtr.Zero, "QWidget", null);
+                if (childChildWindow != IntPtr.Zero)
+                {
+                    return childChildWindow;
+                }
+            }
+            return IntPtr.Zero;
         }
 
         public static int LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam)
@@ -437,21 +450,13 @@ namespace VirtualDesktopSwitcher.Code
 
                 if (IsScrollPoint(msllHookStruct.pt))
                 {
-                    int highOrder = msllHookStruct.mouseData >> 16;
-
-                    if (IsVirtualBoxInForeground()) // VirtualBox eats our Ctrl-Win-Arrow keystrokes.
+                    var virtualBoxWindow = GetVirtualBoxInForeground();
+                    if (virtualBoxWindow != IntPtr.Zero) // Send right control first if VirtualBox
                     {
-                        WinApi.SetForegroundWindow(_startMenu);
-
-                        // Ensure start menu has focus before we send keystrokes.
-                        var foregroundWindow = WinApi.GetForegroundWindow();
-                        while (foregroundWindow != _startMenu)
-                        {
-                            Thread.Sleep(1);
-                            foregroundWindow = WinApi.GetForegroundWindow();
-                        }
+                        WinApi.KeyPress(virtualBoxWindow, WinApi.VK_RCONTROL);
                     }
 
+                    int highOrder = msllHookStruct.mouseData >> 16;
                     CtrlWinKey(highOrder > 0 ? VirtualKeyCode.LEFT : VirtualKeyCode.RIGHT);
                 }
             }
