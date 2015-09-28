@@ -451,7 +451,7 @@ namespace VirtualDesktopSwitcher.Code
                 if (IsScrollPoint(msllHookStruct.pt))
                 {
                     var virtualBoxWindow = GetVirtualBoxInForeground();
-                    if (virtualBoxWindow != IntPtr.Zero) // Send right control first if VirtualBox
+                    if (virtualBoxWindow != IntPtr.Zero) // Send VK_RCONTROL first if VirtualBox.
                     {
                         WinApi.KeyPress(virtualBoxWindow, WinApi.VK_RCONTROL);
                     }
