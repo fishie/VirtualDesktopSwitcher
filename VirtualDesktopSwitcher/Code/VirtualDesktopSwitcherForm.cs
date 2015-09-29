@@ -51,6 +51,7 @@ namespace VirtualDesktopSwitcher.Code
         private static IntPtr _startMenu;
         private static bool _desktopScroll;
         private static bool _taskViewScroll;
+        private static bool _virtualBoxFix;
         private static int _hHook;
 
         private HookProc _mouseHookProcedure; // Need to keep a reference to hookproc or otherwise it will be GC:ed.
@@ -83,18 +84,26 @@ namespace VirtualDesktopSwitcher.Code
             else HideRectangles();
         }
 
+        private void CheckedChanged(out bool b, CheckBox checkBox, string propertyName)
+        {
+            b = checkBox.Checked;
+            _jsonConfig[propertyName] = b;
+            UpdateConfigJsonFile();
+        }
+
         private void desktopScrollCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            _desktopScroll = desktopScrollCheckbox.Checked;
-            _jsonConfig.desktopScroll = _desktopScroll;
-            UpdateConfigJsonFile();
+            CheckedChanged(out _desktopScroll, desktopScrollCheckbox, "desktopScroll");
         }
 
         private void taskViewButtonScrollCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            _taskViewScroll = taskViewButtonScrollCheckbox.Checked;
-            _jsonConfig.taskViewScroll = _taskViewScroll;
-            UpdateConfigJsonFile();
+            CheckedChanged(out _taskViewScroll, taskViewButtonScrollCheckbox, "taskViewScroll");
+        }
+
+        private void virtualBoxFixCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckedChanged(out _virtualBoxFix, virtualBoxFixCheckbox, "virtualBoxFix");
         }
 
         private void hideOnStartupCheckbox_CheckedChanged(object sender, EventArgs e)
@@ -285,6 +294,7 @@ namespace VirtualDesktopSwitcher.Code
 
                 _desktopScroll = _jsonConfig.desktopScroll ?? false;
                 _taskViewScroll = _jsonConfig.taskViewScroll ?? false;
+                _virtualBoxFix = _jsonConfig.virtualBoxFix ?? false;
                 HideOnStartup = _jsonConfig.hideOnStartup ?? false;
             }
 
@@ -297,6 +307,7 @@ namespace VirtualDesktopSwitcher.Code
 
             setChecked(_desktopScroll, desktopScrollCheckbox, desktopScrollCheckbox_CheckedChanged);
             setChecked(_taskViewScroll, taskViewButtonScrollCheckbox, taskViewButtonScrollCheckbox_CheckedChanged);
+            setChecked(_virtualBoxFix, virtualBoxFixCheckbox, virtualBoxFixCheckbox_CheckedChanged);
             setChecked(HideOnStartup, hideOnStartupCheckbox, hideOnStartupCheckbox_CheckedChanged);
         }
 
@@ -450,10 +461,13 @@ namespace VirtualDesktopSwitcher.Code
 
                 if (IsScrollPoint(msllHookStruct.pt))
                 {
-                    var virtualBoxWindow = GetVirtualBoxInForeground();
-                    if (virtualBoxWindow != IntPtr.Zero) // Send VK_RCONTROL first if VirtualBox.
+                    if (_virtualBoxFix)
                     {
-                        WinApi.KeyPress(virtualBoxWindow, WinApi.VK_RCONTROL);
+                        var virtualBoxWindow = GetVirtualBoxInForeground();
+                        if (virtualBoxWindow != IntPtr.Zero) // Send VK_RCONTROL first if VirtualBox.
+                        {
+                            WinApi.KeyPress(virtualBoxWindow, WinApi.VK_RCONTROL);
+                        }
                     }
 
                     int highOrder = msllHookStruct.mouseData >> 16;

@@ -47,6 +47,7 @@
             this.minimizeButton = new VirtualDesktopSwitcher.Code.CustomFormControls.MinimizeButton();
             this.exitButton = new VirtualDesktopSwitcher.Code.CustomFormControls.ExitButton();
             this.formTitle = new VirtualDesktopSwitcher.Code.CustomFormControls.TitleLabel();
+            this.virtualBoxFixCheckbox = new System.Windows.Forms.CheckBox();
             this.trayIconRightClickMenu.SuspendLayout();
             this.treeViewRightClickMenuAdd.SuspendLayout();
             this.treeViewRightClickMenuRemove.SuspendLayout();
@@ -113,7 +114,7 @@
             // rectanglesTreeView
             // 
             this.rectanglesTreeView.ContextMenuStrip = this.treeViewRightClickMenuAdd;
-            this.rectanglesTreeView.Location = new System.Drawing.Point(34, 154);
+            this.rectanglesTreeView.Location = new System.Drawing.Point(34, 177);
             this.rectanglesTreeView.Name = "rectanglesTreeView";
             this.rectanglesTreeView.Size = new System.Drawing.Size(217, 124);
             this.rectanglesTreeView.TabIndex = 4;
@@ -164,7 +165,7 @@
             // 
             this.advancedLabel.AutoSize = true;
             this.advancedLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.advancedLabel.Location = new System.Drawing.Point(31, 138);
+            this.advancedLabel.Location = new System.Drawing.Point(31, 161);
             this.advancedLabel.Name = "advancedLabel";
             this.advancedLabel.Size = new System.Drawing.Size(75, 13);
             this.advancedLabel.TabIndex = 6;
@@ -213,12 +214,24 @@
             this.formTitle.TabIndex = 0;
             this.formTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // virtualBoxFixCheckbox
+            // 
+            this.virtualBoxFixCheckbox.AutoSize = true;
+            this.virtualBoxFixCheckbox.Location = new System.Drawing.Point(34, 131);
+            this.virtualBoxFixCheckbox.Name = "virtualBoxFixCheckbox";
+            this.virtualBoxFixCheckbox.Size = new System.Drawing.Size(86, 17);
+            this.virtualBoxFixCheckbox.TabIndex = 8;
+            this.virtualBoxFixCheckbox.Text = "VirtualBox fix";
+            this.virtualBoxFixCheckbox.UseVisualStyleBackColor = true;
+            this.virtualBoxFixCheckbox.CheckedChanged += new System.EventHandler(this.virtualBoxFixCheckbox_CheckedChanged);
+            // 
             // VirtualDesktopSwitcherForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 290);
+            this.ClientSize = new System.Drawing.Size(284, 314);
             this.ControlBox = false;
+            this.Controls.Add(this.virtualBoxFixCheckbox);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.advancedLabel);
             this.Controls.Add(this.taskViewButtonScrollCheckbox);
@@ -229,7 +242,6 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(300, 300);
             this.Name = "VirtualDesktopSwitcherForm";
             this.ShowInTaskbar = false;
             this.TopMost = true;
@@ -264,6 +276,7 @@
         private VirtualDesktopSwitcher.Code.CustomFormControls.TitleLabel formTitle;
         private VirtualDesktopSwitcher.Code.CustomFormControls.ExitButton exitButton;
         private VirtualDesktopSwitcher.Code.CustomFormControls.MinimizeButton minimizeButton;
+        private System.Windows.Forms.CheckBox virtualBoxFixCheckbox;
     }
 }
 
