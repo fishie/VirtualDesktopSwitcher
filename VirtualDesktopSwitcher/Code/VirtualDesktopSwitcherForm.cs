@@ -43,8 +43,7 @@ namespace VirtualDesktopSwitcher.Code
         #endregion
 
         public bool HideOnStartup { get; private set; }
-        public delegate int HookProc(int nCode, IntPtr wParam, IntPtr lParam);
-
+        
         private static VirtualDesktopSwitcherForm _formInstance;
         private static IKeyboardSimulator _keyboardSimulator;
         private static List<Rectangle> _rectangles;
@@ -54,7 +53,7 @@ namespace VirtualDesktopSwitcher.Code
         private static bool _virtualBoxFix;
         private static int _hHook;
 
-        private HookProc _mouseHookProcedure; // Need to keep a reference to hookproc or otherwise it will be GC:ed.
+        private WinApi.HookProc _mouseHookProcedure; // Need to keep a reference to hookproc or otherwise it will be GC:ed.
         private readonly List<Form> _forms;
         private dynamic _jsonConfig;
         private TreeNode _clickedNode;

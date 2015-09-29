@@ -19,42 +19,44 @@ namespace VirtualDesktopSwitcher.Code
         #endregion
 
         #region WinAPIFunctions
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
-        public static extern int SetWindowsHookEx(int idHook, VirtualDesktopSwitcherForm.HookProc lpfn, IntPtr hInstance, int threadId);
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern int SetWindowsHookEx(int idHook, HookProc lpfn, IntPtr hInstance, int threadId);
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern bool UnhookWindowsHookEx(int idHook);
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern int CallNextHookEx(int idHook, int nCode, IntPtr wParam, IntPtr lParam);
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern IntPtr WindowFromPoint(VirtualDesktopSwitcherForm.POINT point);
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern int GetWindowText(IntPtr hWnd, StringBuilder title, int size);
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern bool SetForegroundWindow(IntPtr hWnd);
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern IntPtr GetForegroundWindow();
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern IntPtr FindWindow(string lpszClass, string lpszWindow);
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, uint wParam, uint lParam);
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern uint MapVirtualKey(uint uCode, uint uMapType);
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall, SetLastError = true)]
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern IntPtr FindWindowEx(IntPtr parentHandle, IntPtr childAfter, string className, string windowTitle);
         #endregion
+
+        public delegate int HookProc(int nCode, IntPtr wParam, IntPtr lParam);
 
         private static uint CreateKeyLparam(uint key, bool keyUp)
         {
