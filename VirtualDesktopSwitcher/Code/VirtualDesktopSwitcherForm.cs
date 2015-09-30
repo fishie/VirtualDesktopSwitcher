@@ -11,6 +11,7 @@ using WindowsInput.Native;
 using IWshRuntimeLibrary;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using File = System.IO.File;
 
 namespace VirtualDesktopSwitcher.Code
@@ -47,7 +48,6 @@ namespace VirtualDesktopSwitcher.Code
         private static VirtualDesktopSwitcherForm _formInstance;
         private static IKeyboardSimulator _keyboardSimulator;
         private static List<Rectangle> _rectangles;
-        private static IntPtr _startMenu;
         private static bool _desktopScroll;
         private static bool _taskViewScroll;
         private static bool _virtualBoxFix;
@@ -73,7 +73,6 @@ namespace VirtualDesktopSwitcher.Code
             ReadConfig();
             CheckForStartupShortcut();
             AttachHook();
-            FindStartMenu();
         }
 
         #region Event handlers
@@ -248,21 +247,30 @@ namespace VirtualDesktopSwitcher.Code
         }
         #endregion
 
-        private static void FindStartMenu()
-        {
-            _startMenu = WinApi.FindWindow("Shell_TrayWnd", null);
-            if (_startMenu == IntPtr.Zero)
-            {
-                MessageBox.Show("Failed to find start menu!");
-            }
-        }
-
         private void ReadConfig()
         {
+            if (File.Exists(CONFIG_FILENAME) == false)
+            {
+                File.WriteAllText(CONFIG_FILENAME, "{}");
+                _jsonConfig = new JObject();
+                return;
+            }
+
             using (var streamReader = new StreamReader(CONFIG_FILENAME))
             {
                 string json = streamReader.ReadToEnd();
-                _jsonConfig = JsonConvert.DeserializeObject(json);
+
+                try
+                {
+                    _jsonConfig = JsonConvert.DeserializeObject(json);
+                }
+                catch (JsonReaderException)
+                {
+                    streamReader.Close();
+                    File.WriteAllText(CONFIG_FILENAME, "{}");
+                    _jsonConfig = new JObject();
+                    return;
+                }
 
                 if (_jsonConfig.rectangles != null)
                 {
