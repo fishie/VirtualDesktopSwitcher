@@ -13,7 +13,7 @@ Version 2, use at your own risk: [vds-v2.zip](https://github.com/fishie/VirtualD
 1. Download zip-file.
 2. Extract zip file somewhere of your choice (for example "My Documents\vds\").
 3. Double click the exe-file.
-4. A window should show up, if not, the program probably crashed for some reason. You should also have a new tray icon. Right -clicking on the tray icon will show/hide the main window.
+4. A window should show up, if not, the program probably crashed for some reason. You should also have a new tray icon. Left-clicking the tray icon will show/hide the main window.
 5. Check the "Desktop scroll" checkbox if you want to be able to hover over your desktop background and scroll with your mouse to switch desktops.
 6. Check the "Task View button scroll" checkbox if you want to be able to switch virtual desktops by scrolling while hovering over the Task View button.
 7. Check the "Load on Windows startup" checkbox to automatically run this program when Windows starts.
