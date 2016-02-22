@@ -431,16 +431,12 @@ namespace VirtualDesktopSwitcher.Code
                    (_taskViewScroll && title == "Task View");
         }
         
-        private static IntPtr GetVirtualBoxInForeground()
+        private static IntPtr GetVirtualBoxInForeground(IntPtr foregroundWindow, string foregroundWindowTitle)
         {
-            var foregroundWindow = WinApi.GetForegroundWindow();
             var className = new StringBuilder(7);
-            var title = new StringBuilder(255);
-
             WinApi.GetClassName(foregroundWindow, className, 8);
-            WinApi.GetWindowText(foregroundWindow, title, 256);
 
-            if (className.ToString() == "QWidget" && title.ToString().EndsWith("VirtualBox"))
+            if (className.ToString() == "QWidget" && foregroundWindowTitle.EndsWith("VirtualBox"))
             {
                 var childWindow = WinApi.FindWindowEx(foregroundWindow, IntPtr.Zero, "QWidget", null);
 
@@ -466,11 +462,17 @@ namespace VirtualDesktopSwitcher.Code
             {
                 var msllHookStruct = Marshal.PtrToStructure<MSLLHOOKSTRUCT>(lParam);
 
-                if (IsScrollPoint(msllHookStruct.pt))
+                var foregroundWindow = WinApi.GetForegroundWindow();
+                var foregroundWindowTitle = new StringBuilder(255);
+                WinApi.GetWindowText(foregroundWindow, foregroundWindowTitle, 256);
+                var windowTitleString = foregroundWindowTitle.ToString();
+                bool isVolumeControlOpen = windowTitleString == "Volume Control";
+
+                if (!isVolumeControlOpen && IsScrollPoint(msllHookStruct.pt))
                 {
                     if (_virtualBoxFix)
                     {
-                        var virtualBoxWindow = GetVirtualBoxInForeground();
+                        var virtualBoxWindow = GetVirtualBoxInForeground(foregroundWindow, windowTitleString);
                         if (virtualBoxWindow != IntPtr.Zero) // Send VK_RCONTROL first if VirtualBox.
                         {
                             WinApi.KeyPress(virtualBoxWindow, WinApi.VK_RCONTROL);
