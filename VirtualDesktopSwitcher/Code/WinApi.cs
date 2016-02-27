@@ -80,6 +80,9 @@ namespace VirtualDesktopSwitcher.Code
         public static extern bool EnumChildWindows(IntPtr parentHandle, EnumChildProc callback, IntPtr lParam);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern uint RegisterWindowMessage(string lpString);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern IntPtr GetAncestor(IntPtr hwnd, uint flags);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]

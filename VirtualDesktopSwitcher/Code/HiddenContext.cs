@@ -7,7 +7,8 @@ namespace VirtualDesktopSwitcher.Code
         public HiddenContext()
         {
             var form = new VirtualDesktopSwitcherForm();
-            if (form.HideOnStartup == false) form.Show();
+            form.Show();
+            if (form.HideOnStartup) form.Hide();
         }
     }
 }

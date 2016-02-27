@@ -43,11 +43,11 @@
             this.removeRectangleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.taskViewButtonScrollCheckbox = new System.Windows.Forms.CheckBox();
             this.advancedLabel = new System.Windows.Forms.Label();
+            this.virtualBoxFixCheckbox = new System.Windows.Forms.CheckBox();
             this.panel1 = new VirtualDesktopSwitcher.Code.CustomFormControls.TitlePanel();
             this.minimizeButton = new VirtualDesktopSwitcher.Code.CustomFormControls.MinimizeButton();
             this.exitButton = new VirtualDesktopSwitcher.Code.CustomFormControls.ExitButton();
             this.formTitle = new VirtualDesktopSwitcher.Code.CustomFormControls.TitleLabel();
-            this.virtualBoxFixCheckbox = new System.Windows.Forms.CheckBox();
             this.trayIconRightClickMenu.SuspendLayout();
             this.treeViewRightClickMenuAdd.SuspendLayout();
             this.treeViewRightClickMenuRemove.SuspendLayout();
@@ -118,6 +118,7 @@
             this.rectanglesTreeView.Name = "rectanglesTreeView";
             this.rectanglesTreeView.Size = new System.Drawing.Size(217, 124);
             this.rectanglesTreeView.TabIndex = 4;
+            this.rectanglesTreeView.Visible = false;
             this.rectanglesTreeView.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.rectanglesTreeView_AfterLabelEdit);
             this.rectanglesTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.rectanglesTreeView_NodeMouseClick);
             this.rectanglesTreeView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rectanglesTreeView_MouseDown);
@@ -173,6 +174,17 @@
             this.advancedLabel.Click += new System.EventHandler(this.ToggleRectangles);
             this.advancedLabel.DoubleClick += new System.EventHandler(this.ToggleRectangles);
             // 
+            // virtualBoxFixCheckbox
+            // 
+            this.virtualBoxFixCheckbox.AutoSize = true;
+            this.virtualBoxFixCheckbox.Location = new System.Drawing.Point(34, 131);
+            this.virtualBoxFixCheckbox.Name = "virtualBoxFixCheckbox";
+            this.virtualBoxFixCheckbox.Size = new System.Drawing.Size(86, 17);
+            this.virtualBoxFixCheckbox.TabIndex = 8;
+            this.virtualBoxFixCheckbox.Text = "VirtualBox fix";
+            this.virtualBoxFixCheckbox.UseVisualStyleBackColor = true;
+            this.virtualBoxFixCheckbox.CheckedChanged += new System.EventHandler(this.virtualBoxFixCheckbox_CheckedChanged);
+            // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.SystemColors.Window;
@@ -214,22 +226,11 @@
             this.formTitle.TabIndex = 0;
             this.formTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // virtualBoxFixCheckbox
-            // 
-            this.virtualBoxFixCheckbox.AutoSize = true;
-            this.virtualBoxFixCheckbox.Location = new System.Drawing.Point(34, 131);
-            this.virtualBoxFixCheckbox.Name = "virtualBoxFixCheckbox";
-            this.virtualBoxFixCheckbox.Size = new System.Drawing.Size(86, 17);
-            this.virtualBoxFixCheckbox.TabIndex = 8;
-            this.virtualBoxFixCheckbox.Text = "VirtualBox fix";
-            this.virtualBoxFixCheckbox.UseVisualStyleBackColor = true;
-            this.virtualBoxFixCheckbox.CheckedChanged += new System.EventHandler(this.virtualBoxFixCheckbox_CheckedChanged);
-            // 
             // VirtualDesktopSwitcherForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 314);
+            this.ClientSize = new System.Drawing.Size(284, 190);
             this.ControlBox = false;
             this.Controls.Add(this.virtualBoxFixCheckbox);
             this.Controls.Add(this.panel1);
@@ -246,7 +247,6 @@
             this.ShowInTaskbar = false;
             this.TopMost = true;
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.VirtualDesktopSwitcherForm_FormClosed);
-            this.Shown += new System.EventHandler(this.VirtualDesktopSwitcherForm_Shown);
             this.VisibleChanged += new System.EventHandler(this.VirtualDesktopSwitcherForm_VisibleChanged);
             this.trayIconRightClickMenu.ResumeLayout(false);
             this.treeViewRightClickMenuAdd.ResumeLayout(false);

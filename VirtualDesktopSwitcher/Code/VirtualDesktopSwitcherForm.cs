@@ -29,6 +29,7 @@ namespace VirtualDesktopSwitcher.Code
         private static int _hHook;
         private static IntPtr _desktopWindow;
         private static List<IntPtr> _taskViewButtons;
+        private static uint _wmTaskbarCreated;
 
         private WinApi.HookProc _mouseHookProcedure; // Need to keep a reference to hookproc or otherwise it will be GC:ed.
         private readonly List<Form> _forms;
@@ -70,6 +71,7 @@ namespace VirtualDesktopSwitcher.Code
 
         private void FindWindows()
         {
+            _wmTaskbarCreated = WinApi.RegisterWindowMessage("TaskbarCreated");
             _taskViewButtons = new List<IntPtr>();
             WinApi.EnumChildWindows(WinApi.GetDesktopWindow(), EnumWindow, IntPtr.Zero);
         }
@@ -239,11 +241,6 @@ namespace VirtualDesktopSwitcher.Code
             Height += (rectanglesTreeView.Visible ? 1 : -1) * rectanglesTreeView.Height;
             advancedLabel.Text = (rectanglesTreeView.Visible ? "-" : "+") + advancedLabel.Text.Substring(1);
         }
-
-        private void VirtualDesktopSwitcherForm_Shown(object sender, EventArgs e)
-        {
-            ToggleRectangles();
-        }
         #endregion
 
         private void ReadConfig()
@@ -341,11 +338,6 @@ namespace VirtualDesktopSwitcher.Code
                 loadOnWindowsStartupCheckbox.Checked = false;
             }
         }
-        
-        public void ExposeWndProc(ref Message m)
-        {
-            WndProc(ref m);
-        }
 
         protected override void WndProc(ref Message message)
         {
@@ -355,6 +347,11 @@ namespace VirtualDesktopSwitcher.Code
                 base.WndProc(ref message);
                 message.Result = (IntPtr)(WinApi.HT_CAPTION);
                 return;
+            }
+
+            if (message.Msg == _wmTaskbarCreated)
+            {
+                FindWindows();
             }
 
             base.WndProc(ref message);
