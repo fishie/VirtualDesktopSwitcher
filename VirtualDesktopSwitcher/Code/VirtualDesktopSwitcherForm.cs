@@ -18,31 +18,6 @@ namespace VirtualDesktopSwitcher.Code
 {
     public partial class VirtualDesktopSwitcherForm : Form
     {
-        #region Structs
-        [StructLayout(LayoutKind.Sequential)]
-        public struct POINT
-        {
-            public int x; // LONG
-            public int y; // LONG
-
-            public POINT(int x, int y)
-            {
-                this.x = x;
-                this.y = y;
-            }
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct MSLLHOOKSTRUCT
-        {
-            public POINT pt;
-            public int mouseData; // DWORD
-            public int flags; // DWORD
-            public int time; // DWORD
-            public IntPtr dwExtraInfo; // ULONG_PTR
-        }
-        #endregion
-
         public bool HideOnStartup { get; private set; }
         
         private static VirtualDesktopSwitcherForm _formInstance;
@@ -52,6 +27,8 @@ namespace VirtualDesktopSwitcher.Code
         private static bool _taskViewScroll;
         private static bool _virtualBoxFix;
         private static int _hHook;
+        private static IntPtr _desktopWindow;
+        private static List<IntPtr> _taskViewButtons;
 
         private WinApi.HookProc _mouseHookProcedure; // Need to keep a reference to hookproc or otherwise it will be GC:ed.
         private readonly List<Form> _forms;
@@ -73,6 +50,28 @@ namespace VirtualDesktopSwitcher.Code
             ReadConfig();
             CheckForStartupShortcut();
             AttachHook();
+            FindWindows();
+        }
+
+        private static bool EnumWindow(IntPtr hwnd, IntPtr lParam)
+        {
+            var title = GetWindowString(hwnd);
+            var className = GetWindowClass(hwnd);
+            if (title == "FolderView" && className == "SysListView32" && IsDesktopWindowLineage(hwnd))
+            {
+                _desktopWindow = hwnd;
+            }
+            if (title == "Task View" && className == "TrayButton")
+            {
+                _taskViewButtons.Add(hwnd);
+            }
+            return true;
+        }
+
+        private void FindWindows()
+        {
+            _taskViewButtons = new List<IntPtr>();
+            WinApi.EnumChildWindows(WinApi.GetDesktopWindow(), EnumWindow, IntPtr.Zero);
         }
 
         #region Event handlers
@@ -406,7 +405,7 @@ namespace VirtualDesktopSwitcher.Code
             _keyboardSimulator.KeyUp(VirtualKeyCode.LCONTROL);
         }
 
-        private static bool CheckPoint(POINT point)
+        private static bool CheckPoint(WinApi.POINT point)
         {
             return _rectangles.Any(rectangle =>
                 point.x > rectangle.Left &&
@@ -423,6 +422,13 @@ namespace VirtualDesktopSwitcher.Code
             return stringBuilder.ToString();
         }
 
+        private static string GetWindowClass(IntPtr hwnd)
+        {
+            var stringBuilder = new StringBuilder(256);
+            WinApi.GetClassName(hwnd, stringBuilder, 256);
+            return stringBuilder.ToString();
+        }
+
         private static bool IsDesktopWindowLineage(IntPtr hwnd)
         {
             var parent = WinApi.GetParent(hwnd);
@@ -435,22 +441,20 @@ namespace VirtualDesktopSwitcher.Code
             return ancestor == parentparent;
         }
 
-        private static bool IsScrollPoint(POINT point)
+        private static bool IsScrollPoint(WinApi.POINT point)
         {
             var windowUnderCursor = WinApi.WindowFromPoint(point);
-            var title = GetWindowString(windowUnderCursor);
 
             return (_rectangles.Count > 0 && CheckPoint(point)) ||
-                   (_desktopScroll && title == "FolderView" && IsDesktopWindowLineage(windowUnderCursor)) ||
-                   (_taskViewScroll && title == "Task View");
+                   (_desktopScroll && windowUnderCursor == _desktopWindow) ||
+                   (_taskViewScroll && _taskViewButtons.Contains(windowUnderCursor));
         }
         
         private static IntPtr GetVirtualBoxInForeground(IntPtr foregroundWindow, string foregroundWindowTitle)
         {
-            var className = new StringBuilder(7);
-            WinApi.GetClassName(foregroundWindow, className, 8);
+            var className = GetWindowClass(foregroundWindow);
 
-            if (className.ToString() == "QWidget" && foregroundWindowTitle.EndsWith("VirtualBox"))
+            if (className == "QWidget" && foregroundWindowTitle.EndsWith("VirtualBox"))
             {
                 var childWindow = WinApi.FindWindowEx(foregroundWindow, IntPtr.Zero, "QWidget", null);
 
@@ -474,7 +478,7 @@ namespace VirtualDesktopSwitcher.Code
 
             if (wParam.ToInt32() == WinApi.WM_MOUSEWHEEL)
             {
-                var msllHookStruct = Marshal.PtrToStructure<MSLLHOOKSTRUCT>(lParam);
+                var msllHookStruct = Marshal.PtrToStructure<WinApi.MSLLHOOKSTRUCT>(lParam);
 
                 var foregroundWindow = WinApi.GetForegroundWindow();
                 var foregroundWindowTitle = GetWindowString(foregroundWindow);
@@ -498,7 +502,7 @@ namespace VirtualDesktopSwitcher.Code
 
             if (_formInstance.Visible)
             {
-                var point = Marshal.PtrToStructure<MSLLHOOKSTRUCT>(lParam).pt;
+                var point = Marshal.PtrToStructure<WinApi.MSLLHOOKSTRUCT>(lParam).pt;
                 _formInstance.formTitle.Text = $"{point.x} {point.y}";
                 _formInstance.BackColor = IsScrollPoint(point) ? Color.Yellow : SystemColors.Control;
             }

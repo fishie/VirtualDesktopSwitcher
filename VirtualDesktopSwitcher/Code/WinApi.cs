@@ -18,6 +18,31 @@ namespace VirtualDesktopSwitcher.Code
         public const uint VK_RCONTROL = 0xA3;
         #endregion
 
+        #region Structs
+        [StructLayout(LayoutKind.Sequential)]
+        public struct POINT
+        {
+            public int x; // LONG
+            public int y; // LONG
+
+            public POINT(int x, int y)
+            {
+                this.x = x;
+                this.y = y;
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MSLLHOOKSTRUCT
+        {
+            public POINT pt;
+            public int mouseData; // DWORD
+            public int flags; // DWORD
+            public int time; // DWORD
+            public IntPtr dwExtraInfo; // ULONG_PTR
+        }
+        #endregion
+
         #region WinAPIFunctions
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern int SetWindowsHookEx(int idHook, HookProc lpfn, IntPtr hInstance, int threadId);
@@ -29,7 +54,7 @@ namespace VirtualDesktopSwitcher.Code
         public static extern int CallNextHookEx(int idHook, int nCode, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        public static extern IntPtr WindowFromPoint(VirtualDesktopSwitcherForm.POINT point);
+        public static extern IntPtr WindowFromPoint(POINT point);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern int GetWindowText(IntPtr hWnd, StringBuilder title, int size);
@@ -45,6 +70,14 @@ namespace VirtualDesktopSwitcher.Code
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern int GetWindowTextLength(IntPtr hWnd);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern IntPtr GetDesktopWindow();
+
+        public delegate bool EnumChildProc(IntPtr hwnd, IntPtr lParam);
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool EnumChildWindows(IntPtr parentHandle, EnumChildProc callback, IntPtr lParam);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern IntPtr GetAncestor(IntPtr hwnd, uint flags);
