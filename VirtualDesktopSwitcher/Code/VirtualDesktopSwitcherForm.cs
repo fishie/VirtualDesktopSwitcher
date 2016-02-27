@@ -415,19 +415,33 @@ namespace VirtualDesktopSwitcher.Code
                 point.y < rectangle.Bottom);
         }
 
-        private static string GetTitleFromWindowUnderPoint(POINT point)
+        private static string GetWindowString(IntPtr hwnd)
         {
-            var title = new StringBuilder(10);
-            WinApi.GetWindowText(WinApi.WindowFromPoint(point), title, 11);
-            return title.ToString();
+            int length = WinApi.GetWindowTextLength(hwnd);
+            var stringBuilder = new StringBuilder(length + 1);
+            WinApi.GetWindowText(hwnd, stringBuilder, stringBuilder.Capacity);
+            return stringBuilder.ToString();
+        }
+
+        private static bool IsDesktopWindowLineage(IntPtr hwnd)
+        {
+            var parent = WinApi.GetParent(hwnd);
+            if (parent == IntPtr.Zero) return false;
+
+            var parentparent = WinApi.GetParent(parent);
+            if (parentparent == IntPtr.Zero) return false;
+
+            var ancestor = WinApi.GetAncestor(hwnd, 2);
+            return ancestor == parentparent;
         }
 
         private static bool IsScrollPoint(POINT point)
         {
-            var title = GetTitleFromWindowUnderPoint(point);
+            var windowUnderCursor = WinApi.WindowFromPoint(point);
+            var title = GetWindowString(windowUnderCursor);
 
             return (_rectangles.Count > 0 && CheckPoint(point)) ||
-                   (_desktopScroll && title == "FolderView") ||
+                   (_desktopScroll && title == "FolderView" && IsDesktopWindowLineage(windowUnderCursor)) ||
                    (_taskViewScroll && title == "Task View");
         }
         
@@ -463,16 +477,14 @@ namespace VirtualDesktopSwitcher.Code
                 var msllHookStruct = Marshal.PtrToStructure<MSLLHOOKSTRUCT>(lParam);
 
                 var foregroundWindow = WinApi.GetForegroundWindow();
-                var foregroundWindowTitle = new StringBuilder(255);
-                WinApi.GetWindowText(foregroundWindow, foregroundWindowTitle, 256);
-                var windowTitleString = foregroundWindowTitle.ToString();
-                bool isVolumeControlOpen = windowTitleString == "Volume Control";
+                var foregroundWindowTitle = GetWindowString(foregroundWindow);
+                bool isVolumeControlOpen = foregroundWindowTitle == "Volume Control";
 
                 if (!isVolumeControlOpen && IsScrollPoint(msllHookStruct.pt))
                 {
                     if (_virtualBoxFix)
                     {
-                        var virtualBoxWindow = GetVirtualBoxInForeground(foregroundWindow, windowTitleString);
+                        var virtualBoxWindow = GetVirtualBoxInForeground(foregroundWindow, foregroundWindowTitle);
                         if (virtualBoxWindow != IntPtr.Zero) // Send VK_RCONTROL first if VirtualBox.
                         {
                             WinApi.KeyPress(virtualBoxWindow, WinApi.VK_RCONTROL);
