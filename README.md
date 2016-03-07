@@ -20,7 +20,7 @@ Version 2, use at your own risk: [vds-v2.zip](https://github.com/fishie/VirtualD
 8. Check the "Start hidden" checkbox to start the program minimised to the tray. Useful when using the "Load on Windows startup" option.
 
 ## Testing
-Has only been tested by me. Some possible points of failure are the hard coded titles "FolderView" and "Task View"  [here](https://github.com/fishie/VirtualDesktopSwitcher/blob/master/VirtualDesktopSwitcher/Code/VirtualDesktopSwitcherForm.cs#L430). I have only tested in on US English version, I can imagine them being different on a Chinese Windows 10 for example.
+Has only been tested by me. Some possible points of failure are the hard coded titles "FolderView" and "Task View"  [here](https://github.com/fishie/VirtualDesktopSwitcher/blob/master/VirtualDesktopSwitcher/Code/VirtualDesktopSwitcherForm.cs#L57). I have only tested in on US English version, I can imagine them being different on a Chinese Windows 10 for example.
 
 ## Copyright
 ```
