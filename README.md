@@ -24,7 +24,7 @@ Has only been tested by me. Some possible points of failure are the hard coded t
 
 ## Copyright
 ```
-Copyright (C) 2015 Rishie Sharma
+Copyright (C) 2016 Rishie Sharma
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

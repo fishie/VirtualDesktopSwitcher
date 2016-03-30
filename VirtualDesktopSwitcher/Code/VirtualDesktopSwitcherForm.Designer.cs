@@ -47,7 +47,7 @@
             this.panel1 = new VirtualDesktopSwitcher.Code.CustomFormControls.TitlePanel();
             this.minimizeButton = new VirtualDesktopSwitcher.Code.CustomFormControls.MinimizeButton();
             this.exitButton = new VirtualDesktopSwitcher.Code.CustomFormControls.ExitButton();
-            this.formTitle = new VirtualDesktopSwitcher.Code.CustomFormControls.TitleLabel();
+            this.formTitle = new System.Windows.Forms.LinkLabel();
             this.trayIconRightClickMenu.SuspendLayout();
             this.treeViewRightClickMenuAdd.SuspendLayout();
             this.treeViewRightClickMenuRemove.SuspendLayout();
@@ -220,11 +220,14 @@
             // 
             // formTitle
             // 
-            this.formTitle.Location = new System.Drawing.Point(0, 0);
+            this.formTitle.Location = new System.Drawing.Point(3, 0);
             this.formTitle.Name = "formTitle";
-            this.formTitle.Size = new System.Drawing.Size(224, 25);
+            this.formTitle.Size = new System.Drawing.Size(207, 25);
             this.formTitle.TabIndex = 0;
+            this.formTitle.TabStop = true;
+            this.formTitle.Text = "GitHub.com/fishie/VirtualDesktopSwitcher";
             this.formTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.formTitle.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.formTitle_LinkClicked);
             // 
             // VirtualDesktopSwitcherForm
             // 
@@ -247,6 +250,7 @@
             this.ShowInTaskbar = false;
             this.TopMost = true;
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.VirtualDesktopSwitcherForm_FormClosed);
+            this.Load += new System.EventHandler(this.VirtualDesktopSwitcherForm_Load);
             this.VisibleChanged += new System.EventHandler(this.VirtualDesktopSwitcherForm_VisibleChanged);
             this.trayIconRightClickMenu.ResumeLayout(false);
             this.treeViewRightClickMenuAdd.ResumeLayout(false);
@@ -273,7 +277,7 @@
         private System.Windows.Forms.CheckBox taskViewButtonScrollCheckbox;
         private System.Windows.Forms.Label advancedLabel;
         private VirtualDesktopSwitcher.Code.CustomFormControls.TitlePanel panel1;
-        private VirtualDesktopSwitcher.Code.CustomFormControls.TitleLabel formTitle;
+        private System.Windows.Forms.LinkLabel formTitle;
         private VirtualDesktopSwitcher.Code.CustomFormControls.ExitButton exitButton;
         private VirtualDesktopSwitcher.Code.CustomFormControls.MinimizeButton minimizeButton;
         private System.Windows.Forms.CheckBox virtualBoxFixCheckbox;

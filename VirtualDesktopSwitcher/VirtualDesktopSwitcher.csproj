@@ -65,9 +65,6 @@
     </Compile>
     <Compile Include="Code\HiddenContext.cs" />
     <Compile Include="Code\Rectangle.cs" />
-    <Compile Include="Code\CustomFormControls\TitleLabel.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Code\CustomFormControls\TitlePanel.cs">
       <SubType>Component</SubType>
     </Compile>

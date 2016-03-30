@@ -13,6 +13,7 @@ using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using File = System.IO.File;
+using System.Diagnostics;
 
 namespace VirtualDesktopSwitcher.Code
 {
@@ -239,7 +240,7 @@ namespace VirtualDesktopSwitcher.Code
         {
             rectanglesTreeView.Visible ^= true;
             Height += (rectanglesTreeView.Visible ? 1 : -1) * rectanglesTreeView.Height;
-            advancedLabel.Text = (rectanglesTreeView.Visible ? "-" : "+") + advancedLabel.Text.Substring(1);
+            advancedLabel.Text = (rectanglesTreeView.Visible ? "-" : "+") + " Advanced";
         }
         #endregion
 
@@ -500,7 +501,11 @@ namespace VirtualDesktopSwitcher.Code
             if (_formInstance.Visible)
             {
                 var point = Marshal.PtrToStructure<WinApi.MSLLHOOKSTRUCT>(lParam).pt;
-                _formInstance.formTitle.Text = $"{point.x} {point.y}";
+                if (_formInstance.rectanglesTreeView.Visible)
+                {
+                    _formInstance.advancedLabel.Text = $"- Advanced [{point.x} {point.y}]";
+                }
+                
                 _formInstance.BackColor = IsScrollPoint(point) ? Color.Yellow : SystemColors.Control;
             }
 
@@ -543,6 +548,16 @@ namespace VirtualDesktopSwitcher.Code
         {
             var json = JsonConvert.SerializeObject(_jsonConfig, Formatting.Indented);
             File.WriteAllText(CONFIG_FILENAME, json);
+        }
+
+        private void VirtualDesktopSwitcherForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void formTitle_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start("http://" + formTitle.Text);
         }
     }
 }
