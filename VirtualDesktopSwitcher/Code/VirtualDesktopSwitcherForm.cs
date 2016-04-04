@@ -447,24 +447,27 @@ namespace VirtualDesktopSwitcher.Code
                    (_desktopScroll && windowUnderCursor == _desktopWindow) ||
                    (_taskViewScroll && _taskViewButtons.Contains(windowUnderCursor));
         }
-        
+
         private static IntPtr GetVirtualBoxInForeground(IntPtr foregroundWindow, string foregroundWindowTitle)
         {
-            var className = GetWindowClass(foregroundWindow);
+            var mainWindow = IntPtr.Zero;
 
-            if (className == "QWidget" && foregroundWindowTitle.EndsWith("VirtualBox"))
+            if (GetWindowClass(foregroundWindow) == "QWidget" &&
+                foregroundWindowTitle.EndsWith("VirtualBox"))
             {
-                var childWindow = WinApi.FindWindowEx(foregroundWindow, IntPtr.Zero, "QWidget", null);
-
-                if (childWindow == IntPtr.Zero) return IntPtr.Zero;
-
-                var childChildWindow = WinApi.FindWindowEx(childWindow, IntPtr.Zero, "QWidget", null);
-                if (childChildWindow != IntPtr.Zero)
+                WinApi.EnumChildWindows(foregroundWindow, (hwnd, lParam) =>
                 {
-                    return childChildWindow;
-                }
+                    if (GetWindowString(hwnd) == "qt_scrollarea_vcontainer" &&
+                        GetWindowClass(hwnd) == "QWidget")
+                    {
+                        mainWindow = WinApi.GetParent(hwnd);
+                        return false;
+                    }
+                    return true;
+
+                }, IntPtr.Zero);
             }
-            return IntPtr.Zero;
+            return mainWindow;
         }
 
         public static int LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam)
@@ -548,11 +551,6 @@ namespace VirtualDesktopSwitcher.Code
         {
             var json = JsonConvert.SerializeObject(_jsonConfig, Formatting.Indented);
             File.WriteAllText(CONFIG_FILENAME, json);
-        }
-
-        private void VirtualDesktopSwitcherForm_Load(object sender, EventArgs e)
-        {
-
         }
 
         private void formTitle_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

@@ -250,7 +250,6 @@
             this.ShowInTaskbar = false;
             this.TopMost = true;
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.VirtualDesktopSwitcherForm_FormClosed);
-            this.Load += new System.EventHandler(this.VirtualDesktopSwitcherForm_Load);
             this.VisibleChanged += new System.EventHandler(this.VirtualDesktopSwitcherForm_VisibleChanged);
             this.trayIconRightClickMenu.ResumeLayout(false);
             this.treeViewRightClickMenuAdd.ResumeLayout(false);
