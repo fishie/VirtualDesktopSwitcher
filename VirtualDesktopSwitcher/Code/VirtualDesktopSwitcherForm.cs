@@ -487,10 +487,11 @@ namespace VirtualDesktopSwitcher.Code
 
                 if (!isVolumeControlOpen && IsScrollPoint(msllHookStruct.pt))
                 {
+                    var virtualBoxWindow = IntPtr.Zero;
                     if (_virtualBoxFix)
                     {
-                        var virtualBoxWindow = GetVirtualBoxInForeground(foregroundWindow, foregroundWindowTitle);
-                        if (virtualBoxWindow != IntPtr.Zero) // Send VK_RCONTROL first if VirtualBox.
+                        virtualBoxWindow = GetVirtualBoxInForeground(foregroundWindow, foregroundWindowTitle);
+                        if (virtualBoxWindow != IntPtr.Zero)
                         {
                             WinApi.KeyPress(virtualBoxWindow, WinApi.VK_RCONTROL);
                         }
@@ -498,6 +499,11 @@ namespace VirtualDesktopSwitcher.Code
 
                     int highOrder = msllHookStruct.mouseData >> 16;
                     CtrlWinKey(highOrder > 0 ? VirtualKeyCode.LEFT : VirtualKeyCode.RIGHT);
+
+                    if (_virtualBoxFix && virtualBoxWindow != IntPtr.Zero)
+                    {
+                        WinApi.KeyPress(virtualBoxWindow, WinApi.VK_RCONTROL);
+                    }
                 }
             }
 
