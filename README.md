@@ -4,7 +4,7 @@ Are you like me and have been using the mouse scroll to switch between virtual d
 
 Finally virtual desktops have come to Windows! Hallelujah! But, virtual desktops in Windows 10 are somewhat lacking in functionality compared to the well established virtual desktops in the GNU/Linux world. Sooner or later Microsoft will probably introduce more functionality but in the meantime this project attempts to amend some of what is lacking.
 
-Also check out https://www.facebook.com/Win10VirtualDesktopSwitcher which might be more interesting for you.
+Also check out https://www.facebook.com/Win10VirtualDesktopSwitcher and https://github.com/Grabacr07/VirtualDesktop which might be more interesting for you.
 
 ## Download
 Version 3, use at your own risk: [vds-v3.zip](https://github.com/fishie/VirtualDesktopSwitcher/releases/download/v3/vds-v3.zip)
