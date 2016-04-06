@@ -44,7 +44,7 @@
             this.taskViewButtonScrollCheckbox = new System.Windows.Forms.CheckBox();
             this.advancedLabel = new System.Windows.Forms.Label();
             this.virtualBoxFixCheckbox = new System.Windows.Forms.CheckBox();
-            this.versionLabel = new System.Windows.Forms.Label();
+            this.versionLabel = new System.Windows.Forms.TextBox();
             this.panel1 = new VirtualDesktopSwitcher.Code.CustomFormControls.TitlePanel();
             this.minimizeButton = new VirtualDesktopSwitcher.Code.CustomFormControls.MinimizeButton();
             this.exitButton = new VirtualDesktopSwitcher.Code.CustomFormControls.ExitButton();
@@ -96,7 +96,7 @@
             this.hideOnStartupCheckbox.Location = new System.Drawing.Point(34, 108);
             this.hideOnStartupCheckbox.Name = "hideOnStartupCheckbox";
             this.hideOnStartupCheckbox.Size = new System.Drawing.Size(83, 17);
-            this.hideOnStartupCheckbox.TabIndex = 2;
+            this.hideOnStartupCheckbox.TabIndex = 4;
             this.hideOnStartupCheckbox.Text = "Start hidden";
             this.hideOnStartupCheckbox.UseVisualStyleBackColor = true;
             this.hideOnStartupCheckbox.CheckedChanged += new System.EventHandler(this.hideOnStartupCheckbox_CheckedChanged);
@@ -158,7 +158,7 @@
             this.taskViewButtonScrollCheckbox.Location = new System.Drawing.Point(34, 62);
             this.taskViewButtonScrollCheckbox.Name = "taskViewButtonScrollCheckbox";
             this.taskViewButtonScrollCheckbox.Size = new System.Drawing.Size(136, 17);
-            this.taskViewButtonScrollCheckbox.TabIndex = 5;
+            this.taskViewButtonScrollCheckbox.TabIndex = 2;
             this.taskViewButtonScrollCheckbox.Text = "Task View button scroll";
             this.taskViewButtonScrollCheckbox.UseVisualStyleBackColor = true;
             this.taskViewButtonScrollCheckbox.CheckedChanged += new System.EventHandler(this.taskViewButtonScrollCheckbox_CheckedChanged);
@@ -181,19 +181,23 @@
             this.virtualBoxFixCheckbox.Location = new System.Drawing.Point(34, 131);
             this.virtualBoxFixCheckbox.Name = "virtualBoxFixCheckbox";
             this.virtualBoxFixCheckbox.Size = new System.Drawing.Size(86, 17);
-            this.virtualBoxFixCheckbox.TabIndex = 8;
+            this.virtualBoxFixCheckbox.TabIndex = 5;
             this.virtualBoxFixCheckbox.Text = "VirtualBox fix";
             this.virtualBoxFixCheckbox.UseVisualStyleBackColor = true;
             this.virtualBoxFixCheckbox.CheckedChanged += new System.EventHandler(this.virtualBoxFixCheckbox_CheckedChanged);
             // 
             // versionLabel
             // 
-            this.versionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.versionLabel.BackColor = System.Drawing.SystemColors.Control;
+            this.versionLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.versionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.versionLabel.Location = new System.Drawing.Point(133, 28);
+            this.versionLabel.Multiline = true;
             this.versionLabel.Name = "versionLabel";
-            this.versionLabel.Size = new System.Drawing.Size(148, 13);
+            this.versionLabel.Size = new System.Drawing.Size(146, 13);
             this.versionLabel.TabIndex = 9;
-            this.versionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.versionLabel.TabStop = false;
+            this.versionLabel.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // panel1
             // 
@@ -291,7 +295,7 @@
         private VirtualDesktopSwitcher.Code.CustomFormControls.ExitButton exitButton;
         private VirtualDesktopSwitcher.Code.CustomFormControls.MinimizeButton minimizeButton;
         private System.Windows.Forms.CheckBox virtualBoxFixCheckbox;
-        private System.Windows.Forms.Label versionLabel;
+        private System.Windows.Forms.TextBox versionLabel;
     }
 }
 

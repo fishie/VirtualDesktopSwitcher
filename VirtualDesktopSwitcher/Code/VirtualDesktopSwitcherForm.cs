@@ -62,7 +62,7 @@ namespace VirtualDesktopSwitcher.Code
             var versiontxtStream = Assembly.GetExecutingAssembly()
                 .GetManifestResourceStream("VirtualDesktopSwitcher.version.txt");
             var streamReader = new StreamReader(versiontxtStream);
-            versionLabel.Text = streamReader.ReadToEnd();
+            versionLabel.Text = streamReader.ReadToEnd().Trim();
         }
 
         private static bool EnumWindow(IntPtr hwnd, IntPtr lParam)
