@@ -106,7 +106,9 @@
   <ItemGroup>
     <Content Include="Resources\favicon.ico" />
     <Content Include="FodyWeavers.xml" />
-    <EmbeddedResource Include="version.txt" />
+    <EmbeddedResource Include="version.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="IWshRuntimeLibrary">
