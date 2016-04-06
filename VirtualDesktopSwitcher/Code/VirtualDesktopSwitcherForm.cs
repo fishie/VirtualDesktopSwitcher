@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using File = System.IO.File;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace VirtualDesktopSwitcher.Code
 {
@@ -49,10 +50,19 @@ namespace VirtualDesktopSwitcher.Code
             _rectangles = new List<Rectangle>();
             _forms = new List<Form>();
 
+            ReadVersion();
             ReadConfig();
             CheckForStartupShortcut();
             AttachHook();
             FindWindows();
+        }
+
+        private void ReadVersion()
+        {
+            var versiontxtStream = Assembly.GetExecutingAssembly()
+                .GetManifestResourceStream("VirtualDesktopSwitcher.version.txt");
+            var streamReader = new StreamReader(versiontxtStream);
+            versionLabel.Text = streamReader.ReadToEnd();
         }
 
         private static bool EnumWindow(IntPtr hwnd, IntPtr lParam)

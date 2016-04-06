@@ -44,6 +44,7 @@
             this.taskViewButtonScrollCheckbox = new System.Windows.Forms.CheckBox();
             this.advancedLabel = new System.Windows.Forms.Label();
             this.virtualBoxFixCheckbox = new System.Windows.Forms.CheckBox();
+            this.versionLabel = new System.Windows.Forms.Label();
             this.panel1 = new VirtualDesktopSwitcher.Code.CustomFormControls.TitlePanel();
             this.minimizeButton = new VirtualDesktopSwitcher.Code.CustomFormControls.MinimizeButton();
             this.exitButton = new VirtualDesktopSwitcher.Code.CustomFormControls.ExitButton();
@@ -185,6 +186,15 @@
             this.virtualBoxFixCheckbox.UseVisualStyleBackColor = true;
             this.virtualBoxFixCheckbox.CheckedChanged += new System.EventHandler(this.virtualBoxFixCheckbox_CheckedChanged);
             // 
+            // versionLabel
+            // 
+            this.versionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.versionLabel.Location = new System.Drawing.Point(133, 28);
+            this.versionLabel.Name = "versionLabel";
+            this.versionLabel.Size = new System.Drawing.Size(148, 13);
+            this.versionLabel.TabIndex = 9;
+            this.versionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.SystemColors.Window;
@@ -235,6 +245,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 190);
             this.ControlBox = false;
+            this.Controls.Add(this.versionLabel);
             this.Controls.Add(this.virtualBoxFixCheckbox);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.advancedLabel);
@@ -280,6 +291,7 @@
         private VirtualDesktopSwitcher.Code.CustomFormControls.ExitButton exitButton;
         private VirtualDesktopSwitcher.Code.CustomFormControls.MinimizeButton minimizeButton;
         private System.Windows.Forms.CheckBox virtualBoxFixCheckbox;
+        private System.Windows.Forms.Label versionLabel;
     }
 }
 
