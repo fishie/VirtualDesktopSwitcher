@@ -9,7 +9,6 @@ using System.Windows.Forms;
 using WindowsInput;
 using WindowsInput.Native;
 using IWshRuntimeLibrary;
-using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using File = System.IO.File;
@@ -388,7 +387,6 @@ namespace VirtualDesktopSwitcher.Code
             }
         }
 
-        [UsedImplicitly]
         private void DetachHook()
         {
             var ret = WinApi.UnhookWindowsHookEx(_hHook);
