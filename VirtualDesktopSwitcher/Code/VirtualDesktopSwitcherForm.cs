@@ -183,9 +183,8 @@ namespace VirtualDesktopSwitcher.Code
         {
             int rectangleIndex = e.Node.Parent.Parent.Index;
             string propertyName = e.Node.Parent.Text;
-            int value;
 
-            if (int.TryParse(e.Label, out value))
+            if (int.TryParse(e.Label, out int value))
             {
                 _rectangles[rectangleIndex].Set(propertyName, value);
                 _jsonConfig.rectangles[rectangleIndex][propertyName] = value;
@@ -205,17 +204,17 @@ namespace VirtualDesktopSwitcher.Code
             var node = rectanglesTreeView.Nodes.Add("rectangle " + (rectanglesTreeView.Nodes.Count + 1));
             rectanglesTreeView.SelectedNode = node;
 
-            Action<string, string> addSubNode = (label, value) =>
+            void AddSubNode(string label, string value)
             {
                 var subnode = node.Nodes.Add(label);
                 subnode.Nodes.Add(value);
                 subnode.ExpandAll();
-            };
+            }
 
-            addSubNode("x", "0");
-            addSubNode("y", "0");
-            addSubNode("width", "50");
-            addSubNode("height", "40");
+            AddSubNode("x", "0");
+            AddSubNode("y", "0");
+            AddSubNode("width", "50");
+            AddSubNode("height", "40");
 
             _rectangles.Add(new Rectangle(0, 0, 50, 40));
             var jObject = JsonConvert.DeserializeObject(@"{""x"": 0, ""y"": 0, ""width"": 50, ""height"": 40}");
@@ -243,7 +242,7 @@ namespace VirtualDesktopSwitcher.Code
             {
                 rectanglesTreeView.SelectedNode = node;
                 _clickedNode = node;
-                treeViewRightClickMenuRemove.Items[0].Text = $"Remove rectangle {(node.Index + 1)}";
+                treeViewRightClickMenuRemove.Items[0].Text = $"Remove rectangle {node.Index + 1}";
                 rectanglesTreeView.ContextMenuStrip = treeViewRightClickMenuRemove;
             }
             else
@@ -298,17 +297,17 @@ namespace VirtualDesktopSwitcher.Code
 
                         var node = rectanglesTreeView.Nodes.Add("rectangle " + (rectanglesTreeView.Nodes.Count + 1));
 
-                        Action<string, int> addSubNode = (label, value) =>
+                        void AddSubNode(string label, int value)
                         {
                             var subnode = node.Nodes.Add(label);
                             subnode.Nodes.Add(value.ToString());
                             subnode.ExpandAll();
-                        };
+                        }
 
-                        addSubNode("x", x);
-                        addSubNode("y", y);
-                        addSubNode("width", width);
-                        addSubNode("height", height);
+                        AddSubNode("x", x);
+                        AddSubNode("y", y);
+                        AddSubNode("width", width);
+                        AddSubNode("height", height);
                     }
                 }
 
@@ -318,17 +317,17 @@ namespace VirtualDesktopSwitcher.Code
                 HideOnStartup = _jsonConfig.hideOnStartup ?? false;
             }
 
-            Action<bool, CheckBox, EventHandler> setChecked = (boolValue, checkBox, eventHandler) =>
+            void SetChecked(bool boolValue, CheckBox checkBox, EventHandler eventHandler)
             {
                 checkBox.CheckedChanged -= eventHandler;
                 checkBox.Checked = boolValue;
                 checkBox.CheckedChanged += eventHandler;
-            };
+            }
 
-            setChecked(_desktopScroll, desktopScrollCheckbox, DesktopScrollCheckbox_CheckedChanged);
-            setChecked(_taskViewScroll, taskViewButtonScrollCheckbox, TaskViewButtonScrollCheckbox_CheckedChanged);
-            setChecked(_virtualBoxFix, virtualBoxFixCheckbox, VirtualBoxFixCheckbox_CheckedChanged);
-            setChecked(HideOnStartup, hideOnStartupCheckbox, hideOnStartupCheckbox_CheckedChanged);
+            SetChecked(_desktopScroll, desktopScrollCheckbox, DesktopScrollCheckbox_CheckedChanged);
+            SetChecked(_taskViewScroll, taskViewButtonScrollCheckbox, TaskViewButtonScrollCheckbox_CheckedChanged);
+            SetChecked(_virtualBoxFix, virtualBoxFixCheckbox, VirtualBoxFixCheckbox_CheckedChanged);
+            SetChecked(HideOnStartup, hideOnStartupCheckbox, hideOnStartupCheckbox_CheckedChanged);
         }
 
         private void CheckForStartupShortcut()
@@ -340,7 +339,7 @@ namespace VirtualDesktopSwitcher.Code
                 var wshShell = new WshShell();
                 var shortcut = wshShell.CreateShortcut(shortcutPath);
                 
-                if (shortcut.TargetPath.ToLower() == System.Reflection.Assembly.GetEntryAssembly().Location.ToLower())
+                if (shortcut.TargetPath.ToLower() == Assembly.GetEntryAssembly().Location.ToLower())
                 {
                     loadOnWindowsStartupCheckbox.Checked = true;
                 }
