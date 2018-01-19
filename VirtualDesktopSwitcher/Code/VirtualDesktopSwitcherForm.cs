@@ -523,7 +523,9 @@ namespace VirtualDesktopSwitcher.Code
                     _formInstance.advancedLabel.Text = $"- Advanced [{point.x} {point.y}]";
                 }
                 
-                _formInstance.BackColor = IsScrollPoint(point) ? Color.Yellow : SystemColors.Control;
+                var backColor = IsScrollPoint(point) ? Color.Yellow : SystemColors.Control;
+                _formInstance.BackColor = backColor;
+                _formInstance.versionLabel.BackColor = backColor;
             }
 
             return WinApi.CallNextHookEx(_hHook, nCode, wParam, lParam);
