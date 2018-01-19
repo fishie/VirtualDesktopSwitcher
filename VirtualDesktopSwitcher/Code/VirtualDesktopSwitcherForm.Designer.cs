@@ -77,7 +77,7 @@
             this.exitMenuItem.Name = "exitMenuItem";
             this.exitMenuItem.Size = new System.Drawing.Size(67, 22);
             this.exitMenuItem.Text = "Exit";
-            this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
+            this.exitMenuItem.Click += new System.EventHandler(this.ExitMenuItem_Click);
             // 
             // desktopScrollCheckbox
             // 
@@ -88,7 +88,7 @@
             this.desktopScrollCheckbox.TabIndex = 1;
             this.desktopScrollCheckbox.Text = "Desktop scroll";
             this.desktopScrollCheckbox.UseVisualStyleBackColor = true;
-            this.desktopScrollCheckbox.CheckedChanged += new System.EventHandler(this.desktopScrollCheckbox_CheckedChanged);
+            this.desktopScrollCheckbox.CheckedChanged += new System.EventHandler(this.DesktopScrollCheckbox_CheckedChanged);
             // 
             // hideOnStartupCheckbox
             // 
@@ -110,7 +110,7 @@
             this.loadOnWindowsStartupCheckbox.TabIndex = 3;
             this.loadOnWindowsStartupCheckbox.Text = "Load on Windows startup";
             this.loadOnWindowsStartupCheckbox.UseVisualStyleBackColor = true;
-            this.loadOnWindowsStartupCheckbox.CheckedChanged += new System.EventHandler(this.loadOnWindowsStartupCheckbox_CheckedChanged);
+            this.loadOnWindowsStartupCheckbox.CheckedChanged += new System.EventHandler(this.LoadOnWindowsStartupCheckbox_CheckedChanged);
             // 
             // rectanglesTreeView
             // 
@@ -120,9 +120,9 @@
             this.rectanglesTreeView.Size = new System.Drawing.Size(217, 124);
             this.rectanglesTreeView.TabIndex = 4;
             this.rectanglesTreeView.Visible = false;
-            this.rectanglesTreeView.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.rectanglesTreeView_AfterLabelEdit);
-            this.rectanglesTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.rectanglesTreeView_NodeMouseClick);
-            this.rectanglesTreeView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.rectanglesTreeView_MouseDown);
+            this.rectanglesTreeView.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.RectanglesTreeView_AfterLabelEdit);
+            this.rectanglesTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.RectanglesTreeView_NodeMouseClick);
+            this.rectanglesTreeView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RectanglesTreeView_MouseDown);
             // 
             // treeViewRightClickMenuAdd
             // 
@@ -136,7 +136,7 @@
             this.addRectangleToolStripMenuItem.Name = "addRectangleToolStripMenuItem";
             this.addRectangleToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.addRectangleToolStripMenuItem.Text = "Add rectangle";
-            this.addRectangleToolStripMenuItem.Click += new System.EventHandler(this.addRectangleToolStripMenuItem_Click);
+            this.addRectangleToolStripMenuItem.Click += new System.EventHandler(this.AddRectangleToolStripMenuItem_Click);
             // 
             // treeViewRightClickMenuRemove
             // 
@@ -150,7 +150,7 @@
             this.removeRectangleToolStripMenuItem.Name = "removeRectangleToolStripMenuItem";
             this.removeRectangleToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.removeRectangleToolStripMenuItem.Text = "Remove rectangle";
-            this.removeRectangleToolStripMenuItem.Click += new System.EventHandler(this.removeRectangleToolStripMenuItem_Click);
+            this.removeRectangleToolStripMenuItem.Click += new System.EventHandler(this.RemoveRectangleToolStripMenuItem_Click);
             // 
             // taskViewButtonScrollCheckbox
             // 
@@ -161,7 +161,7 @@
             this.taskViewButtonScrollCheckbox.TabIndex = 2;
             this.taskViewButtonScrollCheckbox.Text = "Task View button scroll";
             this.taskViewButtonScrollCheckbox.UseVisualStyleBackColor = true;
-            this.taskViewButtonScrollCheckbox.CheckedChanged += new System.EventHandler(this.taskViewButtonScrollCheckbox_CheckedChanged);
+            this.taskViewButtonScrollCheckbox.CheckedChanged += new System.EventHandler(this.TaskViewButtonScrollCheckbox_CheckedChanged);
             // 
             // advancedLabel
             // 
@@ -184,7 +184,7 @@
             this.virtualBoxFixCheckbox.TabIndex = 5;
             this.virtualBoxFixCheckbox.Text = "VirtualBox fix";
             this.virtualBoxFixCheckbox.UseVisualStyleBackColor = true;
-            this.virtualBoxFixCheckbox.CheckedChanged += new System.EventHandler(this.virtualBoxFixCheckbox_CheckedChanged);
+            this.virtualBoxFixCheckbox.CheckedChanged += new System.EventHandler(this.VirtualBoxFixCheckbox_CheckedChanged);
             // 
             // versionLabel
             // 
@@ -230,7 +230,7 @@
             this.exitButton.Size = new System.Drawing.Size(19, 19);
             this.exitButton.TabIndex = 1;
             this.exitButton.UseVisualStyleBackColor = false;
-            this.exitButton.Click += new System.EventHandler(this.exitMenuItem_Click);
+            this.exitButton.Click += new System.EventHandler(this.ExitMenuItem_Click);
             // 
             // formTitle
             // 

@@ -100,17 +100,17 @@ namespace VirtualDesktopSwitcher.Code
             UpdateConfigJsonFile();
         }
 
-        private void desktopScrollCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void DesktopScrollCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             CheckedChanged(out _desktopScroll, desktopScrollCheckbox, "desktopScroll");
         }
 
-        private void taskViewButtonScrollCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void TaskViewButtonScrollCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             CheckedChanged(out _taskViewScroll, taskViewButtonScrollCheckbox, "taskViewScroll");
         }
 
-        private void virtualBoxFixCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void VirtualBoxFixCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             CheckedChanged(out _virtualBoxFix, virtualBoxFixCheckbox, "virtualBoxFix");
         }
@@ -130,13 +130,13 @@ namespace VirtualDesktopSwitcher.Code
             }
         }
 
-        private void exitMenuItem_Click(object sender, EventArgs e)
+        private void ExitMenuItem_Click(object sender, EventArgs e)
         {
             notifyIcon.Visible = false;
             Application.Exit();
         }
 
-        private void loadOnWindowsStartupCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void LoadOnWindowsStartupCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             var shortcutPath = Environment.GetFolderPath(Environment.SpecialFolder.Startup) + SHORTCUT_FILENAME;
 
@@ -146,7 +146,7 @@ namespace VirtualDesktopSwitcher.Code
                 var shortcut = wshShell.CreateShortcut(shortcutPath);
 
                 shortcut.Arguments = "";
-                shortcut.TargetPath = System.Reflection.Assembly.GetEntryAssembly().Location;
+                shortcut.TargetPath = Assembly.GetEntryAssembly().Location;
                 shortcut.Description = "VisualDesktopSwitcher";
                 shortcut.WorkingDirectory = Environment.CurrentDirectory;
                 shortcut.Save();
@@ -163,7 +163,7 @@ namespace VirtualDesktopSwitcher.Code
             Application.Exit();
         }
 
-        private void rectanglesTreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+        private void RectanglesTreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
             if (e.Node.Level == 2)
             {
@@ -172,7 +172,7 @@ namespace VirtualDesktopSwitcher.Code
             }
         }
 
-        private void rectanglesTreeView_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
+        private void RectanglesTreeView_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
         {
             int rectangleIndex = e.Node.Parent.Parent.Index;
             string propertyName = e.Node.Parent.Text;
@@ -193,7 +193,7 @@ namespace VirtualDesktopSwitcher.Code
             e.Node.TreeView.LabelEdit = false;
         }
 
-        private void addRectangleToolStripMenuItem_Click(object sender, EventArgs e)
+        private void AddRectangleToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var node = rectanglesTreeView.Nodes.Add("rectangle " + (rectanglesTreeView.Nodes.Count + 1));
             rectanglesTreeView.SelectedNode = node;
@@ -218,7 +218,7 @@ namespace VirtualDesktopSwitcher.Code
             UpdateConfigJsonFile();
         }
 
-        private void removeRectangleToolStripMenuItem_Click(object sender, EventArgs e)
+        private void RemoveRectangleToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var index = _clickedNode.Index;
             _clickedNode.Remove();
@@ -229,7 +229,7 @@ namespace VirtualDesktopSwitcher.Code
             UpdateConfigJsonFile();
         }
 
-        private void rectanglesTreeView_MouseDown(object sender, MouseEventArgs e)
+        private void RectanglesTreeView_MouseDown(object sender, MouseEventArgs e)
         {
             var node = rectanglesTreeView.GetNodeAt(e.Location);
             if (node != null && node.Level == 0)
@@ -318,9 +318,9 @@ namespace VirtualDesktopSwitcher.Code
                 checkBox.CheckedChanged += eventHandler;
             };
 
-            setChecked(_desktopScroll, desktopScrollCheckbox, desktopScrollCheckbox_CheckedChanged);
-            setChecked(_taskViewScroll, taskViewButtonScrollCheckbox, taskViewButtonScrollCheckbox_CheckedChanged);
-            setChecked(_virtualBoxFix, virtualBoxFixCheckbox, virtualBoxFixCheckbox_CheckedChanged);
+            setChecked(_desktopScroll, desktopScrollCheckbox, DesktopScrollCheckbox_CheckedChanged);
+            setChecked(_taskViewScroll, taskViewButtonScrollCheckbox, TaskViewButtonScrollCheckbox_CheckedChanged);
+            setChecked(_virtualBoxFix, virtualBoxFixCheckbox, VirtualBoxFixCheckbox_CheckedChanged);
             setChecked(HideOnStartup, hideOnStartupCheckbox, hideOnStartupCheckbox_CheckedChanged);
         }
 
@@ -530,8 +530,6 @@ namespace VirtualDesktopSwitcher.Code
 
             return WinApi.CallNextHookEx(_hHook, nCode, wParam, lParam);
         }
-
-
 
         private void ShowRectangles()
         {
