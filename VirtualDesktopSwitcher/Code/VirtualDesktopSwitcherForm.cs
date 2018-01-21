@@ -10,23 +10,19 @@ using WindowsInput;
 using WindowsInput.Native;
 using IWshRuntimeLibrary;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using File = System.IO.File;
 using System.Diagnostics;
 using System.Reflection;
+using Newtonsoft.Json.Serialization;
 
 namespace VirtualDesktopSwitcher.Code
 {
     public partial class VirtualDesktopSwitcherForm : Form
     {
         public bool HideOnStartup { get; private set; }
-        
+
         private static VirtualDesktopSwitcherForm _formInstance;
         private static IKeyboardSimulator _keyboardSimulator;
-        private static List<Rectangle> _rectangles;
-        private static bool _desktopScroll;
-        private static bool _taskViewScroll;
-        private static bool _virtualBoxFix;
         private static int _hHook;
         private static IntPtr _desktopWindow;
         private static List<IntPtr> _taskViewButtons;
@@ -34,7 +30,7 @@ namespace VirtualDesktopSwitcher.Code
 
         private WinApi.HookProc _mouseHookProcedure; // Need to keep a reference to hookproc or otherwise it will be GC:ed.
         private readonly List<Form> _forms;
-        private dynamic _jsonConfig;
+        private static ConfigModel _jsonConfig;
         private TreeNode _clickedNode;
 
         private const string CONFIG_FILENAME = "config.json";
@@ -46,7 +42,6 @@ namespace VirtualDesktopSwitcher.Code
 
             _formInstance = this;
             _keyboardSimulator = (new InputSimulator()).Keyboard;
-            _rectangles = new List<Rectangle>();
             _forms = new List<Form>();
 
             ReadVersion();
@@ -100,32 +95,30 @@ namespace VirtualDesktopSwitcher.Code
             else HideRectangles();
         }
 
-        private void CheckedChanged(out bool b, CheckBox checkBox, string propertyName)
+        private void CheckedChanged(out bool boolVariableToSet, CheckBox checkBox)
         {
-            b = checkBox.Checked;
-            _jsonConfig[propertyName] = b;
+            boolVariableToSet = checkBox.Checked;
             UpdateConfigJsonFile();
         }
 
         private void DesktopScrollCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            CheckedChanged(out _desktopScroll, desktopScrollCheckbox, "desktopScroll");
+            CheckedChanged(out _jsonConfig.DesktopScroll, desktopScrollCheckbox);
         }
 
         private void TaskViewButtonScrollCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            CheckedChanged(out _taskViewScroll, taskViewButtonScrollCheckbox, "taskViewScroll");
+            CheckedChanged(out _jsonConfig.TaskViewScroll, taskViewButtonScrollCheckbox);
         }
 
         private void VirtualBoxFixCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            CheckedChanged(out _virtualBoxFix, virtualBoxFixCheckbox, "virtualBoxFix");
+            CheckedChanged(out _jsonConfig.VirtualBoxFix, virtualBoxFixCheckbox);
         }
 
-        private void hideOnStartupCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void HideOnStartupCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            _jsonConfig.hideOnStartup = hideOnStartupCheckbox.Checked;
-            UpdateConfigJsonFile();
+            CheckedChanged(out _jsonConfig.HideOnStartup, hideOnStartupCheckbox);
         }
 
         private void ToggleVisibilityWithMouseClick(object sender, MouseEventArgs e)
@@ -186,8 +179,7 @@ namespace VirtualDesktopSwitcher.Code
 
             if (int.TryParse(e.Label, out int value))
             {
-                _rectangles[rectangleIndex].Set(propertyName, value);
-                _jsonConfig.rectangles[rectangleIndex][propertyName] = value;
+                _jsonConfig.Rectangles[rectangleIndex].Set(propertyName, value);
                 UpdateConfigJsonFile();
                 HideRectangles();
                 ShowRectangles();
@@ -216,9 +208,8 @@ namespace VirtualDesktopSwitcher.Code
             AddSubNode("width", "50");
             AddSubNode("height", "40");
 
-            _rectangles.Add(new Rectangle(0, 0, 50, 40));
-            var jObject = JsonConvert.DeserializeObject(@"{""x"": 0, ""y"": 0, ""width"": 50, ""height"": 40}");
-            _jsonConfig.rectangles.Add(jObject);
+            _jsonConfig.Rectangles.Add(new Rectangle(0, 0, 50, 40));
+
             HideRectangles();
             ShowRectangles();
             UpdateConfigJsonFile();
@@ -228,8 +219,8 @@ namespace VirtualDesktopSwitcher.Code
         {
             var index = _clickedNode.Index;
             _clickedNode.Remove();
-            _rectangles.RemoveAt(index);
-            _jsonConfig.rectangles.RemoveAt(index);
+            _jsonConfig.Rectangles.RemoveAt(index);
+
             HideRectangles();
             ShowRectangles();
             UpdateConfigJsonFile();
@@ -264,36 +255,35 @@ namespace VirtualDesktopSwitcher.Code
             if (File.Exists(CONFIG_FILENAME) == false)
             {
                 File.WriteAllText(CONFIG_FILENAME, "{}");
-                _jsonConfig = new JObject();
+                _jsonConfig = new ConfigModel();
                 return;
             }
 
             using (var streamReader = new StreamReader(CONFIG_FILENAME))
             {
-                string json = streamReader.ReadToEnd();
+                string json = streamReader.ReadToEnd().Trim();
+                if (json == "") json = "{}";
 
                 try
                 {
-                    _jsonConfig = JsonConvert.DeserializeObject(json);
+                    _jsonConfig = JsonConvert.DeserializeObject<ConfigModel>(json);
                 }
                 catch (JsonReaderException)
                 {
                     streamReader.Close();
                     File.WriteAllText(CONFIG_FILENAME, "{}");
-                    _jsonConfig = new JObject();
+                    _jsonConfig = new ConfigModel();
                     return;
                 }
 
-                if (_jsonConfig.rectangles != null)
+                if (_jsonConfig.Rectangles != null)
                 {
-                    foreach (var jsonRectangle in _jsonConfig.rectangles)
+                    foreach (var jsonRectangle in _jsonConfig.Rectangles)
                     {
-                        int x = jsonRectangle.x;
-                        int y = jsonRectangle.y;
-                        int width = jsonRectangle.width;
-                        int height = jsonRectangle.height;
-
-                        _rectangles.Add(new Rectangle(x, y, width, height));
+                        int x = jsonRectangle.X;
+                        int y = jsonRectangle.Y;
+                        int width = jsonRectangle.Width;
+                        int height = jsonRectangle.Height;
 
                         var node = rectanglesTreeView.Nodes.Add("rectangle " + (rectanglesTreeView.Nodes.Count + 1));
 
@@ -311,10 +301,7 @@ namespace VirtualDesktopSwitcher.Code
                     }
                 }
 
-                _desktopScroll = _jsonConfig.desktopScroll ?? false;
-                _taskViewScroll = _jsonConfig.taskViewScroll ?? false;
-                _virtualBoxFix = _jsonConfig.virtualBoxFix ?? false;
-                HideOnStartup = _jsonConfig.hideOnStartup ?? false;
+                HideOnStartup = _jsonConfig.HideOnStartup;
             }
 
             void SetChecked(bool boolValue, CheckBox checkBox, EventHandler eventHandler)
@@ -324,10 +311,10 @@ namespace VirtualDesktopSwitcher.Code
                 checkBox.CheckedChanged += eventHandler;
             }
 
-            SetChecked(_desktopScroll, desktopScrollCheckbox, DesktopScrollCheckbox_CheckedChanged);
-            SetChecked(_taskViewScroll, taskViewButtonScrollCheckbox, TaskViewButtonScrollCheckbox_CheckedChanged);
-            SetChecked(_virtualBoxFix, virtualBoxFixCheckbox, VirtualBoxFixCheckbox_CheckedChanged);
-            SetChecked(HideOnStartup, hideOnStartupCheckbox, hideOnStartupCheckbox_CheckedChanged);
+            SetChecked(_jsonConfig.DesktopScroll, desktopScrollCheckbox, DesktopScrollCheckbox_CheckedChanged);
+            SetChecked(_jsonConfig.TaskViewScroll, taskViewButtonScrollCheckbox, TaskViewButtonScrollCheckbox_CheckedChanged);
+            SetChecked(_jsonConfig.VirtualBoxFix, virtualBoxFixCheckbox, VirtualBoxFixCheckbox_CheckedChanged);
+            SetChecked(HideOnStartup, hideOnStartupCheckbox, HideOnStartupCheckbox_CheckedChanged);
         }
 
         private void CheckForStartupShortcut()
@@ -338,7 +325,7 @@ namespace VirtualDesktopSwitcher.Code
             {
                 var wshShell = new WshShell();
                 var shortcut = wshShell.CreateShortcut(shortcutPath);
-                
+
                 if (shortcut.TargetPath.ToLower() == Assembly.GetEntryAssembly().Location.ToLower())
                 {
                     loadOnWindowsStartupCheckbox.Checked = true;
@@ -419,7 +406,7 @@ namespace VirtualDesktopSwitcher.Code
 
         private static bool CheckPoint(WinApi.POINT point)
         {
-            return _rectangles.Any(rectangle =>
+            return _jsonConfig.Rectangles.Any(rectangle =>
                 point.x > rectangle.Left &&
                 point.x < rectangle.Right &&
                 point.y > rectangle.Top &&
@@ -457,9 +444,9 @@ namespace VirtualDesktopSwitcher.Code
         {
             var windowUnderCursor = WinApi.WindowFromPoint(point);
 
-            return (_rectangles.Count > 0 && CheckPoint(point)) ||
-                   (_desktopScroll && windowUnderCursor == _desktopWindow) ||
-                   (_taskViewScroll && _taskViewButtons.Contains(windowUnderCursor));
+            return (_jsonConfig.Rectangles.Count > 0 && CheckPoint(point)) ||
+                   (_jsonConfig.DesktopScroll && windowUnderCursor == _desktopWindow) ||
+                   (_jsonConfig.TaskViewScroll && _taskViewButtons.Contains(windowUnderCursor));
         }
 
         private static IntPtr GetVirtualBoxInForeground(IntPtr foregroundWindow, string foregroundWindowTitle)
@@ -502,7 +489,7 @@ namespace VirtualDesktopSwitcher.Code
                 if (!isVolumeControlOpen && IsScrollPoint(msllHookStruct.pt))
                 {
                     var virtualBoxWindow = IntPtr.Zero;
-                    if (_virtualBoxFix)
+                    if (_jsonConfig.VirtualBoxFix)
                     {
                         virtualBoxWindow = GetVirtualBoxInForeground(foregroundWindow, foregroundWindowTitle);
                         if (virtualBoxWindow != IntPtr.Zero)
@@ -514,7 +501,7 @@ namespace VirtualDesktopSwitcher.Code
                     int highOrder = msllHookStruct.mouseData >> 16;
                     CtrlWinKey(highOrder > 0 ? VirtualKeyCode.LEFT : VirtualKeyCode.RIGHT);
 
-                    if (_virtualBoxFix && virtualBoxWindow != IntPtr.Zero)
+                    if (_jsonConfig.VirtualBoxFix && virtualBoxWindow != IntPtr.Zero)
                     {
                         WinApi.KeyPress(virtualBoxWindow, WinApi.VK_RCONTROL);
                     }
@@ -528,7 +515,7 @@ namespace VirtualDesktopSwitcher.Code
                 {
                     _formInstance.advancedLabel.Text = $"- Advanced [{point.x} {point.y}]";
                 }
-                
+
                 var backColor = IsScrollPoint(point) ? Color.Yellow : SystemColors.Control;
                 _formInstance.BackColor = backColor;
                 _formInstance.versionLabel.BackColor = backColor;
@@ -539,7 +526,7 @@ namespace VirtualDesktopSwitcher.Code
 
         private void ShowRectangles()
         {
-            foreach (var rectangle in _rectangles)
+            foreach (var rectangle in _jsonConfig.Rectangles)
             {
                 var form = new Form
                 {
@@ -569,7 +556,11 @@ namespace VirtualDesktopSwitcher.Code
 
         private void UpdateConfigJsonFile()
         {
-            var json = JsonConvert.SerializeObject(_jsonConfig, Formatting.Indented);
+            var settings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
+            var json = JsonConvert.SerializeObject(_jsonConfig, Formatting.Indented, settings);
             File.WriteAllText(CONFIG_FILENAME, json);
         }
 

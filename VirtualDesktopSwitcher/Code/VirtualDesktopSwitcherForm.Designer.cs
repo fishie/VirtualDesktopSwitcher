@@ -99,7 +99,7 @@
             this.hideOnStartupCheckbox.TabIndex = 4;
             this.hideOnStartupCheckbox.Text = "Start hidden";
             this.hideOnStartupCheckbox.UseVisualStyleBackColor = true;
-            this.hideOnStartupCheckbox.CheckedChanged += new System.EventHandler(this.hideOnStartupCheckbox_CheckedChanged);
+            this.hideOnStartupCheckbox.CheckedChanged += new System.EventHandler(this.HideOnStartupCheckbox_CheckedChanged);
             // 
             // loadOnWindowsStartupCheckbox
             // 

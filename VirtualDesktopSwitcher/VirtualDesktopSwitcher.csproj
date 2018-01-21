@@ -54,6 +54,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Code\ConfigModel.cs" />
     <Compile Include="Code\CustomFormControls\ExitButton.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -103,7 +104,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\favicon.ico" />
