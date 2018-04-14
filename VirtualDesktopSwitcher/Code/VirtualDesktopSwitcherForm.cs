@@ -564,7 +564,7 @@ namespace VirtualDesktopSwitcher.Code
             File.WriteAllText(CONFIG_FILENAME, json);
         }
 
-        private void formTitle_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void FormTitle_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start("http://" + formTitle.Text);
         }

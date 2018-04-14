@@ -1,4 +1,6 @@
-﻿namespace VirtualDesktopSwitcher.Code
+﻿using System;
+
+namespace VirtualDesktopSwitcher.Code
 {
     public class Rectangle
     {
@@ -22,16 +24,13 @@
 
         public void Set(string propertyName, int value)
         {
-            GetType().GetProperty(propertyName.CapitalizeFirst()).SetValue(this, value);
-        }
-
-        public int Get(string propertyName)
-        {
-            return (int)GetType().GetProperty(propertyName.CapitalizeFirst()).GetValue(this);
+            var propertyInfo = GetType().GetProperty(propertyName.CapitalizeFirst());
+            if (propertyInfo == null) throw new ArgumentException(nameof(propertyName));
+            propertyInfo.SetValue(this, value);
         }
     }
 
-    static class StringHelper
+    internal static class StringHelper
     {
         public static string CapitalizeFirst(this string text)
         {

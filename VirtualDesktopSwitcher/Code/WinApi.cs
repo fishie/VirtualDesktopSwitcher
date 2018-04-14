@@ -4,7 +4,7 @@ using System.Text;
 
 namespace VirtualDesktopSwitcher.Code
 {
-    class WinApi
+    internal class WinApi
     {
         #region MessageConstants
         // For other hook types, you can obtain these values from Winuser.h in the Microsoft SDK.

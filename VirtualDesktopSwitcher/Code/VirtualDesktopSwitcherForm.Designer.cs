@@ -54,33 +54,33 @@
             this.treeViewRightClickMenuRemove.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
-            // 
+            //
             // notifyIcon
-            // 
+            //
             this.notifyIcon.ContextMenuStrip = this.trayIconRightClickMenu;
             this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
             this.notifyIcon.Text = "VirtualDesktopSwitcher";
             this.notifyIcon.Visible = true;
             this.notifyIcon.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ToggleVisibilityWithMouseClick);
             this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ToggleVisibilityWithMouseClick);
-            // 
+            //
             // trayIconRightClickMenu
-            // 
+            //
             this.trayIconRightClickMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exitMenuItem});
             this.trayIconRightClickMenu.Name = "trayIconRightClickMenu";
             this.trayIconRightClickMenu.ShowImageMargin = false;
             this.trayIconRightClickMenu.Size = new System.Drawing.Size(68, 26);
-            // 
+            //
             // exitMenuItem
-            // 
+            //
             this.exitMenuItem.Name = "exitMenuItem";
             this.exitMenuItem.Size = new System.Drawing.Size(67, 22);
             this.exitMenuItem.Text = "Exit";
             this.exitMenuItem.Click += new System.EventHandler(this.ExitMenuItem_Click);
-            // 
+            //
             // desktopScrollCheckbox
-            // 
+            //
             this.desktopScrollCheckbox.AutoSize = true;
             this.desktopScrollCheckbox.Location = new System.Drawing.Point(34, 39);
             this.desktopScrollCheckbox.Name = "desktopScrollCheckbox";
@@ -89,9 +89,9 @@
             this.desktopScrollCheckbox.Text = "Desktop scroll";
             this.desktopScrollCheckbox.UseVisualStyleBackColor = true;
             this.desktopScrollCheckbox.CheckedChanged += new System.EventHandler(this.DesktopScrollCheckbox_CheckedChanged);
-            // 
+            //
             // hideOnStartupCheckbox
-            // 
+            //
             this.hideOnStartupCheckbox.AutoSize = true;
             this.hideOnStartupCheckbox.Location = new System.Drawing.Point(34, 108);
             this.hideOnStartupCheckbox.Name = "hideOnStartupCheckbox";
@@ -100,9 +100,9 @@
             this.hideOnStartupCheckbox.Text = "Start hidden";
             this.hideOnStartupCheckbox.UseVisualStyleBackColor = true;
             this.hideOnStartupCheckbox.CheckedChanged += new System.EventHandler(this.HideOnStartupCheckbox_CheckedChanged);
-            // 
+            //
             // loadOnWindowsStartupCheckbox
-            // 
+            //
             this.loadOnWindowsStartupCheckbox.AutoSize = true;
             this.loadOnWindowsStartupCheckbox.Location = new System.Drawing.Point(34, 85);
             this.loadOnWindowsStartupCheckbox.Name = "loadOnWindowsStartupCheckbox";
@@ -111,9 +111,9 @@
             this.loadOnWindowsStartupCheckbox.Text = "Load on Windows startup";
             this.loadOnWindowsStartupCheckbox.UseVisualStyleBackColor = true;
             this.loadOnWindowsStartupCheckbox.CheckedChanged += new System.EventHandler(this.LoadOnWindowsStartupCheckbox_CheckedChanged);
-            // 
+            //
             // rectanglesTreeView
-            // 
+            //
             this.rectanglesTreeView.ContextMenuStrip = this.treeViewRightClickMenuAdd;
             this.rectanglesTreeView.Location = new System.Drawing.Point(34, 177);
             this.rectanglesTreeView.Name = "rectanglesTreeView";
@@ -123,37 +123,37 @@
             this.rectanglesTreeView.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.RectanglesTreeView_AfterLabelEdit);
             this.rectanglesTreeView.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.RectanglesTreeView_NodeMouseClick);
             this.rectanglesTreeView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.RectanglesTreeView_MouseDown);
-            // 
+            //
             // treeViewRightClickMenuAdd
-            // 
+            //
             this.treeViewRightClickMenuAdd.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addRectangleToolStripMenuItem});
             this.treeViewRightClickMenuAdd.Name = "treeViewRightClickMenu";
             this.treeViewRightClickMenuAdd.Size = new System.Drawing.Size(149, 26);
-            // 
+            //
             // addRectangleToolStripMenuItem
-            // 
+            //
             this.addRectangleToolStripMenuItem.Name = "addRectangleToolStripMenuItem";
             this.addRectangleToolStripMenuItem.Size = new System.Drawing.Size(148, 22);
             this.addRectangleToolStripMenuItem.Text = "Add rectangle";
             this.addRectangleToolStripMenuItem.Click += new System.EventHandler(this.AddRectangleToolStripMenuItem_Click);
-            // 
+            //
             // treeViewRightClickMenuRemove
-            // 
+            //
             this.treeViewRightClickMenuRemove.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.removeRectangleToolStripMenuItem});
             this.treeViewRightClickMenuRemove.Name = "treeViewRightClickMenuRemove";
             this.treeViewRightClickMenuRemove.Size = new System.Drawing.Size(170, 26);
-            // 
+            //
             // removeRectangleToolStripMenuItem
-            // 
+            //
             this.removeRectangleToolStripMenuItem.Name = "removeRectangleToolStripMenuItem";
             this.removeRectangleToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
             this.removeRectangleToolStripMenuItem.Text = "Remove rectangle";
             this.removeRectangleToolStripMenuItem.Click += new System.EventHandler(this.RemoveRectangleToolStripMenuItem_Click);
-            // 
+            //
             // taskViewButtonScrollCheckbox
-            // 
+            //
             this.taskViewButtonScrollCheckbox.AutoSize = true;
             this.taskViewButtonScrollCheckbox.Location = new System.Drawing.Point(34, 62);
             this.taskViewButtonScrollCheckbox.Name = "taskViewButtonScrollCheckbox";
@@ -162,9 +162,9 @@
             this.taskViewButtonScrollCheckbox.Text = "Task View button scroll";
             this.taskViewButtonScrollCheckbox.UseVisualStyleBackColor = true;
             this.taskViewButtonScrollCheckbox.CheckedChanged += new System.EventHandler(this.TaskViewButtonScrollCheckbox_CheckedChanged);
-            // 
+            //
             // advancedLabel
-            // 
+            //
             this.advancedLabel.AutoSize = true;
             this.advancedLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.advancedLabel.Location = new System.Drawing.Point(31, 161);
@@ -174,9 +174,9 @@
             this.advancedLabel.Text = "+ Advanced";
             this.advancedLabel.Click += new System.EventHandler(this.ToggleRectangles);
             this.advancedLabel.DoubleClick += new System.EventHandler(this.ToggleRectangles);
-            // 
+            //
             // virtualBoxFixCheckbox
-            // 
+            //
             this.virtualBoxFixCheckbox.AutoSize = true;
             this.virtualBoxFixCheckbox.Location = new System.Drawing.Point(34, 131);
             this.virtualBoxFixCheckbox.Name = "virtualBoxFixCheckbox";
@@ -185,9 +185,9 @@
             this.virtualBoxFixCheckbox.Text = "VirtualBox fix";
             this.virtualBoxFixCheckbox.UseVisualStyleBackColor = true;
             this.virtualBoxFixCheckbox.CheckedChanged += new System.EventHandler(this.VirtualBoxFixCheckbox_CheckedChanged);
-            // 
+            //
             // versionLabel
-            // 
+            //
             this.versionLabel.BackColor = System.Drawing.SystemColors.Control;
             this.versionLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.versionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -198,9 +198,9 @@
             this.versionLabel.TabIndex = 9;
             this.versionLabel.TabStop = false;
             this.versionLabel.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
+            //
             // panel1
-            // 
+            //
             this.panel1.BackColor = System.Drawing.SystemColors.Window;
             this.panel1.Controls.Add(this.minimizeButton);
             this.panel1.Controls.Add(this.exitButton);
@@ -210,9 +210,9 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(284, 25);
             this.panel1.TabIndex = 7;
-            // 
+            //
             // minimizeButton
-            // 
+            //
             this.minimizeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.minimizeButton.Location = new System.Drawing.Point(237, 3);
             this.minimizeButton.Name = "minimizeButton";
@@ -220,9 +220,9 @@
             this.minimizeButton.TabIndex = 2;
             this.minimizeButton.UseVisualStyleBackColor = false;
             this.minimizeButton.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ToggleVisibilityWithMouseClick);
-            // 
+            //
             // exitButton
-            // 
+            //
             this.exitButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.exitButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.exitButton.Location = new System.Drawing.Point(262, 3);
@@ -231,9 +231,9 @@
             this.exitButton.TabIndex = 1;
             this.exitButton.UseVisualStyleBackColor = false;
             this.exitButton.Click += new System.EventHandler(this.ExitMenuItem_Click);
-            // 
+            //
             // formTitle
-            // 
+            //
             this.formTitle.Location = new System.Drawing.Point(3, 0);
             this.formTitle.Name = "formTitle";
             this.formTitle.Size = new System.Drawing.Size(207, 25);
@@ -241,10 +241,10 @@
             this.formTitle.TabStop = true;
             this.formTitle.Text = "GitHub.com/fishie/VirtualDesktopSwitcher";
             this.formTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.formTitle.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.formTitle_LinkClicked);
-            // 
+            this.formTitle.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.FormTitle_LinkClicked);
+            //
             // VirtualDesktopSwitcherForm
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 190);
